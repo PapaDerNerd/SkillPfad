@@ -4,9 +4,11 @@
 
 **Profession guide for WoW Forever (Classic ruleset).** For all 12 professions SkillPfad shows the best path from 1 to 300: which recipe to craft next, the materials needed, where to get them, their auction house price, and optionally sets TomTom waypoints. The UI text is currently **German**.
 
-![Layout (schematic preview)](docs/images/layout-schematic.png)
+![Leatherworking: skill path, quests and best recipes](docs/images/leder-guide.jpg)
 
-> The image is a schematic preview built from the addon's layout values, not an in-game screenshot.
+| Shopping list & total needs | Options (switch professions on/off) |
+|---|---|
+| ![Shopping list](docs/images/einkaufsliste.jpg) | ![Options](docs/images/optionen.jpg) |
 
 ## Features
 
@@ -17,6 +19,7 @@
 - Profession quests, with warnings before irreversible choices.
 - Shopping list with costs (Auctionator or own scan) and **one-click export to an Auctionator shopping list**.
 - Several routes per profession with cost comparison; gatherer/crafter pairings.
+- Recommendations stay visible without the profession window (last known state), plus an "open profession" button.
 - Switch professions on/off. Self-test with `/sp check`.
 
 ## Installation

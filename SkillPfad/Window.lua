@@ -90,7 +90,7 @@ hLine:SetHeight(1); hLine:SetPoint("TOPLEFT", 8, -58); hLine:SetPoint("TOPRIGHT"
 
 -- Skillbalken (wie die Berufsleiste im Spiel)
 local bar = CreateFrame("StatusBar", nil, pane, "BackdropTemplate")
-bar:SetSize(190, 16); bar:SetPoint("TOPRIGHT", -14, -22)
+bar:SetSize(150, 16); bar:SetPoint("TOPRIGHT", -14, -22)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 bar:SetMinMaxValues(0, 300)
 bar:SetBackdrop({ bgFile = FLAT, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
@@ -99,6 +99,25 @@ bar:SetBackdropColor(0, 0, 0, 0.8); bar:SetBackdropBorderColor(0.7, 0.6, 0.3, 1)
 local barText = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 barText:SetPoint("CENTER")
 bar:Hide()
+
+-- Knopf: Berufsfenster oeffnen (Zauber wirken ist geschuetzt, daher ein sicherer Knopf)
+local openBtn = CreateFrame("Button", "SkillPfadOpenProf", pane, "SecureActionButtonTemplate,UIPanelButtonTemplate")
+openBtn:SetSize(104, 22); openBtn:SetPoint("TOPRIGHT", -170, -19)
+openBtn:SetText("Beruf öffnen")
+openBtn:SetAttribute("type", "spell")
+openBtn:RegisterForClicks("AnyUp", "AnyDown")
+openBtn:Hide()
+local function updateOpenBtn(key)
+  if InCombatLockdown and InCombatLockdown() then return end
+  local d = key and ns.defs[key]
+  if d and not d.gather and not (ns.TradeFrameShown and ns.TradeFrameShown()) then
+    openBtn:SetAttribute("spell", d.label)
+    openBtn:Show()
+  else
+    openBtn:Hide()
+  end
+end
+ns.UpdateOpenBtn = updateOpenBtn
 
 -- Textbereich (scrollbar) mit Karten je Abschnitt
 local sf = CreateFrame("ScrollFrame", "SkillPfadScroll", pane, "UIPanelScrollFrameTemplate")
@@ -165,6 +184,7 @@ local function blocksOf(list)
 end
 
 local function render()
+  updateOpenBtn(current)
   hIcon:SetTexture(iconPath(current))
   hTitle:SetText(current == "opt" and "Optionen" or (ns.defs[current] and ns.defs[current].label) or "")
   -- Skillbalken
@@ -333,7 +353,7 @@ check("Price",  "Nach AH-Preisen sortieren (statt Farm-Aufwand)", "price", 0,
   function() if ns.Refresh then ns.Refresh() end end)
 check("Auto",   "Fenster automatisch beim Beruf öffnen", "autoShow", -32)
 check("Lock",   "Fenster sperren (nicht verschiebbar)", "locked", -64)
-check("Mini",   "Knopf an der Minimap anzeigen", "minimapShow", -124,
+check("Mini",   "Knopf an der Minimap anzeigen", "minimapShow", -134,
   function() if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end end)
 check("Way",    "Wegpunkte per TomTom-Befehl /way setzen (falls sie falsch sitzen)", "wayMode", -96)
 
@@ -373,24 +393,28 @@ local function slider(name, label, key, y, minV, maxV, step, fmt, onChange)
   controls[#controls + 1] = { s, key, true }
 end
 
-slider("TopN",  "Angezeigte Rezepte", "topN", -154, 1, 5, 1, "%d",
+slider("TopN",  "Angezeigte Rezepte", "topN", -190, 1, 5, 1, "%d",
   function() if ns.Refresh then ns.Refresh() end end)
-slider("Scale", "Fenstergröße", "scale", -210, 0.7, 1.3, 0.05, "%.2f",
+slider("Scale", "Fenstergröße", "scale", -246, 0.7, 1.3, 0.05, "%.2f",
   function(v) f:SetScale(v) end)
 
 local function button(label, y, onClick)
   local b = CreateFrame("Button", nil, opt, "UIPanelButtonTemplate")
-  b:SetSize(220, 24); b:SetPoint("TOPLEFT", 0, y)
+  b:SetSize(290, 24); b:SetPoint("TOPLEFT", 0, y)
   b:SetText(label); b:SetScript("OnClick", onClick)
   return b
 end
 
-button("AH-Preise scannen (AH muss offen sein)", -254, function() ns.StartScan() end)
-button("Gespeicherte Preise löschen", -284, function()
+local scanBtn = button("AH-Preise scannen (AH muss offen sein)", -290, function() ns.StartScan() end)
+if not (CanSendAuctionQuery and QueryAuctionItems) then
+  scanBtn:SetText("Preise: über Auctionator (Liste am AH suchen)")
+  scanBtn:Disable()
+end
+button("Gespeicherte Preise löschen", -320, function()
   SkillPfadDB.prices = {}; ns.UpdateOptions()
   if ns.Refresh then ns.Refresh() end
 end)
-button("Fensterposition zurücksetzen", -314, function() ns.ResetPos() end)
+button("Fensterposition zurücksetzen", -350, function() ns.ResetPos() end)
 function ns.RefreshAll()
   for _, fn in pairs(ns.tabRefresh) do pcall(fn) end
 end
@@ -407,17 +431,17 @@ local function routeText()
   local r = ns.RouteOf and ns.RouteOf(k)
   return "Route " .. ((ns.defs[k] and ns.defs[k].label) or k) .. ": " .. (r and r.name or "?")
 end
-routeBtn = button("Route", -344, function()
+routeBtn = button("Route", -380, function()
   ns.NextRoute(routeKey()); routeBtn:SetText(routeText())
   if ns.RefreshAll then ns.RefreshAll() end
 end)
 routeBtn:SetWidth(320)
 
 local status = opt:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-status:SetPoint("TOPLEFT", 0, -382); status:SetWidth(310); status:SetJustifyH("LEFT")
+status:SetPoint("TOPLEFT", 0, -414); status:SetWidth(310); status:SetJustifyH("LEFT")
 
 function ns.UpdateOptions()
-  if routeBtn and ns.routes then routeBtn:SetText(routeText()) end
+  if routeBtn and ns.RouteOf then routeBtn:SetText(routeText()) end
   loading = true
   for _, c in ipairs(controls) do
     local w, key, isSlider = c[1], c[2], c[3]

@@ -169,15 +169,15 @@ end
 
 local pending, wantOpen = false, false
 
-local function refresh()
-  pending = false
-  local key, rank, maxRank, list, usePrice = scan()
-  if not key then wantOpen = false; return end
-  setRank(key, rank)
+local function build(key, rank, maxRank, list, usePrice, cached)
   local def = ns.defs[key]
   local ph = ns.phaseFor(key, rank)
   local L = {}
   L[#L + 1] = string.format("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
+  if cached then
+    L[#L + 1] = "|cff999999Stand vom letzten Öffnen des Berufsfensters (Skill " .. cached.rank ..
+      "). Menge im Beutel ist aktuell, Rezeptfarben evtl. nicht. Öffne das Berufsfenster zum Aktualisieren.|r"
+  end
   if rank >= maxRank and maxRank < 300 then
     L[#L + 1] = "|cffff8040Maximum erreicht: Lerne beim Lehrer die nächste Stufe.|r"
   end
@@ -241,13 +241,32 @@ local function refresh()
   for _, a in ipairs(ns.QuestActions(key, rank or 1)) do acts[#acts + 1] = a end
   for _, a in ipairs(ns.ShoppingActions(key, rank, ph and ph[2])) do acts[#acts + 1] = a end
   ns.SetActions(key, acts)
-  if wantOpen then
+  if not cached and wantOpen then
     wantOpen = false
     if SkillPfadDB.autoShow and ns.Enabled(key) then
       local was = ns.WindowShown()
       ns.OpenWindow(key, (not was) or ns.autoOpened)
     end
   end
+end
+
+local function refresh()
+  pending = false
+  local key, rank, maxRank, list, usePrice = scan()
+  if not key then wantOpen = false; return end
+  setRank(key, rank)
+  -- Ergebnis merken, damit die Empfehlungen auch ohne offenes Berufsfenster erscheinen
+  local c = {}
+  for k = 1, math.min(8, #list) do
+    local r = list[k]
+    local rg = {}
+    for _, m in ipairs(r.reag) do rg[#rg + 1] = { m[1], m[2], m[4] } end
+    c[#c + 1] = { name = r.name, type = r.type, money = r.money, miss = r.miss, reag = rg,
+                  wscore = r.wscore, mscore = r.mscore }
+  end
+  SkillPfadDB.cache = SkillPfadDB.cache or {}
+  SkillPfadDB.cache[key] = { rank = rank, maxRank = maxRank, list = c }
+  build(key, rank, maxRank, list, usePrice, nil)
 end
 
 local function queue()
@@ -266,6 +285,23 @@ for key, def in pairs(ns.defs) do
   ns.tabRefresh[key] = function()
     if openKey() == key then queue(); return end
     local r = ns.RankOf(key)
+    local cc = SkillPfadDB.cache and SkillPfadDB.cache[key]
+    if cc and cc.list and #cc.list > 0 then
+      local list = {}
+      for _, e in ipairs(cc.list) do
+        local reag, crafts = {}, math.huge
+        for _, m in ipairs(e.reag) do
+          local have = m[3] and itemCount(m[3]) or 0
+          reag[#reag + 1] = { m[1], m[2], have, m[3] }
+          crafts = math.min(crafts, math.floor(have / m[2]))
+        end
+        if crafts == math.huge then crafts = 0 end
+        list[#list + 1] = { name = e.name, type = e.type, money = e.money or 0, miss = e.miss or 0,
+          reag = reag, crafts = crafts, wscore = e.wscore, mscore = e.mscore }
+      end
+      build(key, r or cc.rank, cc.maxRank or 300, list, SkillPfadDB.price and true or false, cc)
+      return
+    end
     local L = { "Öffne dein " .. def.label .. "-Fenster für Empfehlungen." }
     if r then
       local ph = ns.phaseFor(key, r)
@@ -295,7 +331,12 @@ C_Timer.NewTicker(0.7, function()
   if shown and not wasOpen then wantOpen = true; wasOpen = true; if openKey() then queue() end
   elseif not shown and wasOpen then
     wasOpen = false; wantOpen = false
-    if ns.autoOpened and ns.WindowShown() then ns.CloseWindow() end
+    if ns.autoOpened and ns.WindowShown() then ns.CloseWindow()
+    elseif ns.WindowShown() then
+      local t = ns.CurrentTab and ns.CurrentTab()
+      if t and ns.tabRefresh[t] then ns.tabRefresh[t]() end
+      if ns.UpdateOpenBtn then ns.UpdateOpenBtn(t) end
+    end
   elseif shown and openKey() and ns.WindowShown() then queue() end
 end)
 if hooksecurefunc and TradeSkillFrame_SetSelection then

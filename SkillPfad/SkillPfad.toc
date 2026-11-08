@@ -2,7 +2,7 @@
 ## Title: SkillPfad
 ## Notes: Berufs-Guide fuer alle Berufe: Skill-Weg, Material, Fundorte, AH-Preise, TomTom-Wegpunkte (/sp)
 ## Author: PapaDerNerd
-## Version: 1.9.1
+## Version: 1.10.0
 ## OptionalDeps: TomTom, Auctionator
 ## SavedVariables: SkillPfadDB
 

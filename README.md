@@ -4,9 +4,11 @@
 
 **Berufs-Guide für WoW Forever (Classic-Regelwerk).** SkillPfad zeigt dir für alle 12 Berufe den besten Weg von 1 bis 300: welches Rezept du als Nächstes herstellst, welches Material du brauchst, wo du es bekommst, was es im Auktionshaus kostet – und setzt auf Wunsch TomTom-Wegpunkte.
 
-![Layout (schematische Vorschau)](docs/images/layout-schematic.png)
+![Lederverarbeitung: Skill-Weg, Quests und beste Rezepte](docs/images/leder-guide.jpg)
 
-> Die Abbildung ist eine schematische Vorschau aus den Layout-Werten des Addons, kein Spiel-Screenshot. Echte Screenshots folgen.
+| Einkaufsliste & Gesamtbedarf | Optionen (Berufe ein-/ausschalten) |
+|---|---|
+| ![Einkaufsliste](docs/images/einkaufsliste.jpg) | ![Optionen](docs/images/optionen.jpg) |
 
 ## Funktionen
 
@@ -18,6 +20,7 @@
 - **Einkaufsliste mit Kosten** (Preise aus Auctionator oder eigenem Scan) und **Übergabe an Auctionator** als Einkaufsliste per Klick.
 - **Mehrere Routen** pro Beruf mit Kostenvergleich; **Paarungen** wie Bergbau ↔ Schmiedekunst, Kräuterkunde ↔ Alchemie, Angeln ↔ Kochen.
 - **Berufe ein-/ausschalten**, wenn du nicht alles skillst.
+- **Empfehlungen auch ohne offenes Berufsfenster** (letzter Stand) und Knopf „Beruf öffnen“.
 - **Selbsttest** mit `/sp check`.
 
 ## Installation

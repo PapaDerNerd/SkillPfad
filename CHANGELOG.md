@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.10.0
+- Empfehlungen und Einkaufsliste erscheinen auch ohne offenes Berufsfenster (letzter Stand, Beutel aktuell).
+- Knopf "Beruf öffnen" im Fenster öffnet das Berufsfenster.
+
+## 1.9.4
+- AH-Scan-Knopf ausgegraut, wenn der Client keinen eigenen Scan erlaubt; Hinweis auf Auctionator.
+
+## 1.9.3
+- Routenvergleich: "noch keine Preise" statt "ca. 0", solange nichts gescannt ist.
+
+## 1.9.2
+- Optionen: Überlappungen behoben, Routen-Knopf zeigt jetzt den Namen.
+
 ## 1.9.1
 - Berufe in den Einstellungen ein-/ausschaltbar.
 

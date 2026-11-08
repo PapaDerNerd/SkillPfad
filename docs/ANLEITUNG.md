@@ -5,6 +5,9 @@
 2. Im Spiel `/sp` eingeben oder den Minimap-Knopf anklicken.
 3. Öffne ein Berufsfenster (z. B. Lederverarbeitung): SkillPfad erkennt deinen Skill und schlägt das beste Rezept vor. Das Fenster öffnet sich auf Wunsch automatisch.
 
+## Berufsfenster
+SkillPfad liest die Rezepte aus dem Berufsfenster. Einmal geöffnet, merkt es sich die Empfehlungen; bei geschlossenem Fenster siehst du den letzten Stand (Beutel aktuell). Der Knopf „Beruf öffnen“ neben der Skill-Leiste öffnet das Fenster per Klick (Addons dürfen das nicht automatisch).
+
 ## Das Fenster
 - **Links:** Berufe mit deinem aktuellen Skill. Unten „Optionen“.
 - **Oben rechts:** Fortschrittsleiste (Skill / 300).
@@ -14,7 +17,7 @@
 ## Einkaufsliste & Auctionator
 - Die Einkaufsliste rechnet das Fehlende bis zum Phasenende bzw. bis 300 aus (dein Beutel zählt, Barren zählen über ihr Erz).
 - Button „Auctionator-Liste …“ legt in Auctionator die Liste „SkillPfad: <Beruf>“ an. Am Auktionshaus im Reiter *Einkaufslisten* öffnen. Eine gleichnamige Liste wird ersetzt.
-- Preise: Auctionator wird bevorzugt, sonst eigener Scan (`/sp scan` am offenen AH).
+- Preise: kommen von Auctionator. Einen eigenen AH-Scan erlaubt dieser Client nicht; suche die Materialien einmal im AH (z. B. mit der Auctionator-Liste), dann erscheinen die Kosten.
 
 ## Routen & Paarungen
 Viele Berufe haben mehrere Routen (`/sp route <beruf>` oder Button in den Optionen). Der Kostenvergleich markiert die günstigste vollständige Route. Sammelberufe (Bergbau, Kräuterkunde, Angeln, Kürschnerei) zeigen, was du für Schmiedekunst/Ingenieurskunst, Alchemie, Kochen bzw. Lederverarbeitung farmen musst.
@@ -27,5 +30,5 @@ Mit TomTom setzt SkillPfad echte Pfeile. Sitzen sie falsch, in den Optionen „W
 
 ## Fehlersuche
 - `/sp check` ausführen und die Ausgabe (OK/FEHLT/HINWEIS) mit einem Issue melden.
-- Leere Empfehlungen: Berufsfenster einmal öffnen, damit der Skill gescannt wird.
+- Leere Empfehlungen: „Beruf öffnen“ klicken, damit der Skill gescannt wird.
 - Lua-Fehler: `/spdiag` zeigt gesammelte Fehler.

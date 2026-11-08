@@ -170,8 +170,16 @@ function ns.RouteCompareLines(craft, rank)
     local mark = (x == best) and " |cff00ff00<- günstigste|r" or ""
     local nb = x.r.partial and " |cffff8040(Quelle unvollständig)|r" or ""
     nb = nb .. (x.noPrice > 0 and string.format(" |cffffff00(%d Posten ohne Preis)|r", x.noPrice) or "")
-    out[#out + 1] = string.format("   %s: ca. %s%s%s", x.r.name, gold(x.total), nb, mark)
+    if x.total <= 0 and x.noPrice > 0 then
+      out[#out + 1] = string.format("   %s: |cffffff00noch keine Preise (%d Posten)|r%s", x.r.name, x.noPrice,
+        x.r.partial and " |cffff8040(Quelle unvollständig)|r" or "")
+    else
+      out[#out + 1] = string.format("   %s: ca. %s%s%s", x.r.name, gold(x.total), nb, mark)
+    end
   end
+  local anyPrice = false
+  for _, x in ipairs(rows) do if x.total > 0 then anyPrice = true end end
+  if not anyPrice then out[#out + 1] = "|cff999999Am Auktionshaus einmal mit Auctionator scannen, dann erscheinen die Kosten.|r" end
   if best then
     local cur = ns.RouteOf(craft)
     if cur ~= best.r then

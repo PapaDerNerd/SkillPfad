@@ -57,7 +57,7 @@ end
 
 function ns.StartScan()
   if not (CanSendAuctionQuery and QueryAuctionItems) then
-    print("|cffffd100SkillPfad:|r Eigener AH-Scan wird von diesem Client nicht unterstuetzt. Nutze Auctionator (Preise werden automatisch uebernommen).")
+    print("|cffffd100SkillPfad:|r Ein eigener AH-Scan geht in diesem Client nicht. Preise kommen von Auctionator: Suche die Materialien einmal im Auktionshaus, z. B. mit der Auctionator-Liste aus SkillPfad, dann erscheinen die Kosten.")
     return
   end
   if not (AuctionFrame and AuctionFrame:IsShown()) then
