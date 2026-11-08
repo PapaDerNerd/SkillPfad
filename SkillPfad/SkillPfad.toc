@@ -1,0 +1,25 @@
+## Interface: 16001, 11508
+## Title: SkillPfad
+## Notes: Berufs-Guide fuer alle Berufe: Skill-Weg, Material, Fundorte, AH-Preise, TomTom-Wegpunkte (/sp)
+## Author: PapaDerNerd
+## Version: 1.9.1
+## OptionalDeps: TomTom, Auctionator
+## SavedVariables: SkillPfadDB
+
+Boot.lua
+Data.lua
+DataA.lua
+MaterialData.lua
+Locations.lua
+LocationsA.lua
+Prices.lua
+Waypoint.lua
+Window.lua
+Quests.lua
+Check.lua
+Shopping.lua
+Plans.lua
+Planner.lua
+Core.lua
+Gathering.lua
+Minimap.lua
