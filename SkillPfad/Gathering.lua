@@ -35,14 +35,14 @@ local function build(key)
     SkillPfadDB.ranks = SkillPfadDB.ranks or {}
     SkillPfadDB.ranks[key] = rank
     local ph = ns.phaseFor(key, rank)
-    L[#L + 1] = string.format("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
+    L[#L + 1] = ns.fmt("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
     if rank >= maxRank and maxRank < 300 then
       L[#L + 1] = "|cffff8040Maximum erreicht: Lerne beim Lehrer die nächste Stufe.|r"
     end
-    L[#L + 1] = string.format("Aktuelle Phase: |cff00ff00%s|r", ph[3])
+    L[#L + 1] = ns.fmt("Aktuelle Phase: |cff00ff00%s|r", ph[3])
     L[#L + 1] = "Wo: " .. ph[4]
     if key == "skin" then
-      L[#L + 1] = string.format("Höchstes häutbares Mob-Level: |cff00ff00~%d|r", mobLevel(rank))
+      L[#L + 1] = ns.fmt("Höchstes häutbares Mob-Level: |cff00ff00~%d|r", mobLevel(rank))
     end
     for _, h in ipairs(def.hints or {}) do
       if rank >= h[1] and rank <= h[2] then
@@ -56,7 +56,7 @@ local function build(key)
       L[#L + 1] = " "
       if lr then
         local lp = ns.phaseFor("leder", lr)
-        L[#L + 1] = string.format("|cffffd100Für Lederverarbeitung (Skill %d):|r", lr)
+        L[#L + 1] = ns.fmt("|cffffd100Für Lederverarbeitung (Skill %d):|r", lr)
         L[#L + 1] = "Du brauchst gerade |cff00ff00" .. lp[3] .. "|r"
         L[#L + 1] = "Farmen: " .. lp[4]
       else
@@ -70,7 +70,7 @@ local function build(key)
   for _, p in ipairs(def.phases) do
     local here = rank and rank >= p[1] and rank < p[2]
     local mark = here and "|cff00ff00> " or "  "
-    L[#L + 1] = string.format("%s%d-%d: %s|r", mark, p[1], math.min(p[2], 300), p[3])
+    L[#L + 1] = ns.fmt("%s%d-%d: %s|r", mark, p[1], math.min(p[2], 300), p[3])
     L[#L + 1] = "      |cff999999" .. p[4] .. "|r"
   end
   ns.SetLines(key, L)

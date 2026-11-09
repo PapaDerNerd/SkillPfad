@@ -23,8 +23,8 @@ function ns.Check()
   for _, l in pairs(ns.quests or {}) do nq = nq + #l end
   for _ in pairs(ns.loc or {}) do nl = nl + 1 end
   for _ in pairs(ns.locA or {}) do nla = nla + 1 end
-  add((np == 12 and nq > 50 and nl > 50) and ok(string.format("Daten: %d Berufe, %d Quests, %d Material-Orte (Horde), %d (Allianz)", np, nq, nl, nla))
-    or bad(string.format("Daten unvollständig: %d Berufe, %d Quests, %d Orte", np, nq, nl)))
+  add((np == 12 and nq > 50 and nl > 50) and ok(ns.fmt("Daten: %d Berufe, %d Quests, %d Material-Orte (Horde), %d (Allianz)", np, nq, nl, nla))
+    or bad(ns.fmt("Daten unvollständig: %d Berufe, %d Quests, %d Orte", np, nq, nl)))
 
   -- Fraktion / Routen
   local fac = UnitFactionGroup and UnitFactionGroup("player") or "?"
@@ -41,7 +41,7 @@ function ns.Check()
     add(warn("Berufsfenster nicht offen oder Beruf nicht erkannt – öffne z.B. Lederverarbeitung und gib /sp check erneut ein."))
   else
     local key, rank, nrec, nlist = scanned[1], scanned[2], scanned[3], scanned[4]
-    add(ok(string.format("Scan: Beruf %s, Skill %s, %s Rezepte gefunden, %s Empfehlungen", tostring(key), tostring(rank), tostring(nrec), tostring(nlist))))
+    add(ok(ns.fmt("Scan: Beruf %s, Skill %s, %s Rezepte gefunden, %s Empfehlungen", tostring(key), tostring(rank), tostring(nrec), tostring(nlist))))
   end
 
   -- Skills
@@ -98,6 +98,6 @@ function ns.Check()
     add(#miss == 0 and ok("Ereignisse gültig") or warn("Ereignisse fehlen: " .. table.concat(miss, ", ")))
   end
 
-  for _, l in ipairs(out) do print(l) end
-  print("|cff999999Schick mir diese Zeilen, wenn etwas FEHLT.|r")
+  for _, l in ipairs(out) do ns.print(l) end
+  ns.print("|cff999999Schick mir diese Zeilen, wenn etwas FEHLT.|r")
 end

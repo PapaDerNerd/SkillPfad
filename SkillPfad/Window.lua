@@ -1,4 +1,5 @@
 local ADDON, ns = ...
+local CreateFrame = ns.CreateFrame  -- uebersetzt Texte je nach Sprache
 SkillPfadDB = SkillPfadDB or {}
 
 local DEFAULTS = { price = false, autoShow = true, topN = 3, scale = 1, locked = false, minimapShow = true }
@@ -111,7 +112,7 @@ local function updateOpenBtn(key)
   if InCombatLockdown and InCombatLockdown() then return end
   local d = key and ns.defs[key]
   if d and not d.gather and not (ns.TradeFrameShown and ns.TradeFrameShown()) then
-    openBtn:SetAttribute("spell", d.label)
+    openBtn:SetAttribute("spell", ns.SpellName and ns.SpellName(key) or d.label)
     openBtn:Show()
   else
     openBtn:Hide()
@@ -381,11 +382,12 @@ local function slider(name, label, key, y, minV, maxV, step, fmt, onChange)
   s:SetPoint("TOPLEFT", 8, y); s:SetWidth(280)
   s:SetMinMaxValues(minV, maxV); s:SetValueStep(step)
   if s.SetObeyStepOnDrag then s:SetObeyStepOnDrag(true) end
+  ns.WrapObj(_G[sname .. "Text"])
   _G[sname .. "Low"]:SetText(tostring(minV))
   _G[sname .. "High"]:SetText(tostring(maxV))
   s:SetScript("OnValueChanged", function(self, v)
     v = math.floor(v / step + 0.5) * step
-    _G[sname .. "Text"]:SetText(label .. ": " .. string.format(fmt, v))
+    _G[sname .. "Text"]:SetText(label .. ": " .. ns.fmt(fmt, v))
     if loading then return end
     SkillPfadDB[key] = v
     if onChange then onChange(v) end
@@ -437,11 +439,28 @@ routeBtn = button("Route", -380, function()
 end)
 routeBtn:SetWidth(320)
 
+-- Sprache: Auto (nach Client) -> Deutsch -> English
+local langBtn
+local function langText()
+  local l = SkillPfadDB and SkillPfadDB.lang
+  local cur = (l == "de" and "Deutsch") or (l == "en" and "English") or ("Auto (" .. (ns.lang == "en" and "English" or "Deutsch") .. ")")
+  return "Sprache / Language: " .. cur
+end
+langBtn = button("Sprache / Language", -410, function()
+  local l = SkillPfadDB.lang
+  local nxt = (l == nil and "de") or (l == "de" and "en") or nil
+  ns.SetLang(nxt)
+  langBtn:SetText(langText())
+  if ns.UpdateOptions then ns.UpdateOptions() end
+end)
+langBtn:SetWidth(320)
+
 local status = opt:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-status:SetPoint("TOPLEFT", 0, -414); status:SetWidth(310); status:SetJustifyH("LEFT")
+status:SetPoint("TOPLEFT", 0, -444); status:SetWidth(310); status:SetJustifyH("LEFT")
 
 function ns.UpdateOptions()
   if routeBtn and ns.RouteOf then routeBtn:SetText(routeText()) end
+  if langBtn then langBtn:SetText(langText()) end
   loading = true
   for _, c in ipairs(controls) do
     local w, key, isSlider = c[1], c[2], c[3]
@@ -452,7 +471,7 @@ function ns.UpdateOptions()
   for key, c in pairs(profChecks) do c:SetChecked(ns.Enabled(key)) end
   local n = 0
   for _ in pairs(SkillPfadDB.prices or {}) do n = n + 1 end
-  status:SetText(string.format("Gespeicherte Preise: %d%s", n,
+  status:SetText(ns.fmt("Gespeicherte Preise: %d%s", n,
     Auctionator and "  |  Auctionator erkannt (wird bevorzugt)" or "") ..
     "\nTomTom: " .. (ns.HasTomTom and ns.HasTomTom() and "gefunden" or "nicht gefunden (nur Blizzard-Wegpunkt)"))
 end
@@ -465,5 +484,16 @@ init:SetScript("OnEvent", function(_, _, name)
   for k, v in pairs(DEFAULTS) do
     if SkillPfadDB[k] == nil then SkillPfadDB[k] = v end
   end
+  -- Datenbank-Version und Grundpruefung (alte/kaputte Daten verwerfen statt Fehler zu werfen)
+  local DBV = 1
+  for _, tk in ipairs({ "off", "cache", "routes", "ranks" }) do
+    if type(SkillPfadDB[tk]) ~= "table" then SkillPfadDB[tk] = nil end
+  end
+  if (tonumber(SkillPfadDB.dbVersion) or 0) < DBV then
+    SkillPfadDB.cache = nil          -- Cache-Format kann sich zwischen Versionen aendern
+    SkillPfadDB.dbVersion = DBV
+  end
+  if ns.InitLang then ns.InitLang() end
+  if ns.RelabelUI then ns.RelabelUI() end
   f:SetScale(SkillPfadDB.scale or 1)
 end)

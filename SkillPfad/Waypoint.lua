@@ -3,7 +3,7 @@ SkillPfadDB = SkillPfadDB or {}
 
 -- Wegpunkte: bevorzugt TomTom, sonst der Blizzard-Wegpunkt, sonst nur eine Chatzeile.
 
-local function say(msg) print("|cffffd100SkillPfad:|r " .. msg) end
+local function say(msg) ns.print("|cffffd100SkillPfad:|r " .. msg) end
 ns.say = say
 
 local uids = {}
@@ -30,7 +30,7 @@ local function setOne(loc, arrow)
 
   -- Weg 1: TomTom-Befehl /way (wenn in den Optionen gewaehlt)
   if SkillPfadDB.wayMode and SlashCmdList and SlashCmdList["TOMTOM_WAY"] then
-    local ok = pcall(SlashCmdList["TOMTOM_WAY"], string.format("#%d %.1f %.1f %s", m, x, y, label))
+    local ok = pcall(SlashCmdList["TOMTOM_WAY"], ns.fmt("#%d %.1f %.1f %s", m, x, y, label))
     if ok then return true end
   end
 
@@ -60,13 +60,13 @@ local function report(list, n)
   local first = list[1]
   local parts = {}
   for i = 1, math.min(#list, 3) do
-    parts[#parts + 1] = string.format("%s %.1f, %.1f", list[i][4], list[i][2], list[i][3])
+    parts[#parts + 1] = ns.fmt("%s %.1f, %.1f", list[i][4], list[i][2], list[i][3])
   end
   if n > 0 then
-    say(string.format("%d Wegpunkt%s gesetzt: %s", n, n == 1 and "" or "e", table.concat(parts, " | ")))
+    say(ns.fmt("%d Wegpunkt%s gesetzt: %s", n, n == 1 and "" or (ns.lang == "en" and "s" or "e"), table.concat(parts, " | ")))
     if not ns.HasTomTom() then say("TomTom nicht gefunden: es wird nur der Blizzard-Wegpunkt genutzt.") end
   else
-    say("Konnte keinen Wegpunkt setzen. Ziel: " .. (first and (first[4] .. string.format(" %.1f, %.1f", first[2], first[3])) or "?"))
+    say("Konnte keinen Wegpunkt setzen. Ziel: " .. (first and (first[4] .. ns.fmt(" %.1f, %.1f", first[2], first[3])) or "?"))
   end
 end
 
@@ -131,7 +131,7 @@ function ns.TrainerActions(key, rank)
     local loc = trainerLoc(t[3])
     if loc and rank >= t[1] and rank <= t[2] then
       out[#out + 1] = {
-        text = string.format("Weg: %s - %s", t[3], t[4]),
+        text = ns.fmt("Weg: %s - %s", t[3], t[4]),
         fn = function() ns.GoToLoc(loc) end,
       }
     end
@@ -151,7 +151,7 @@ function ns.PhaseItemActions(key, phaseIndex)
   for _, id in ipairs((ns.phaseItems[key] or {})[phaseIndex] or {}) do
     if ns.LocFor(id) then
       local nm = ns.locName and ns.locName[id] or tostring(id)
-      out[#out + 1] = { text = "Weg: " .. nm .. " finden", fn = function() ns.GoToItem(id) end }
+      out[#out + 1] = { text = ns.fmt("Weg: %s finden", nm), fn = function() ns.GoToItem(id) end }
     end
   end
   return out
@@ -209,12 +209,12 @@ function ns.MapCheck()
     if not n then bad = bad + 1 end
     parts[#parts + 1] = m .. "=" .. (n or "|cffff4040?|r")
   end
-  say(string.format("%d Karten genutzt, %d unbekannt:", #ids, bad))
+  say(ns.fmt("%d Karten genutzt, %d unbekannt:", #ids, bad))
   local line = ""
   for _, p in ipairs(parts) do
-    if #line + #p > 200 then print(line); line = "" end
+    if #line + #p > 200 then ns.print(line); line = "" end
     line = line .. p .. ", "
   end
-  if line ~= "" then print(line) end
+  if line ~= "" then ns.print(line) end
   say("TomTom: " .. (ns.HasTomTom() and "gefunden" or "NICHT gefunden"))
 end

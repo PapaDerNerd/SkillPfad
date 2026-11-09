@@ -160,10 +160,10 @@ function ns.QuestLines(key, rank)
       if #L == 0 then L[1] = " "; L[2] = "|cffffd100Berufsquests:|r" end
       local mark = (e[6]:find("ENDGÜLTIG", 1, true) or e[6]:find("SCHLIESST", 1, true) or e[6]:find("endgültige", 1, true)) and " |cffff4040[endgültig]|r" or ""
       if rank >= e[1] then
-        L[#L + 1] = string.format("|cff00ff00%s|r%s (ab Skill %d) – %s, %s", e[3], mark, e[1], e[4], e[5])
+        L[#L + 1] = ns.fmt("|cff00ff00%s|r%s (ab Skill %d) – %s, %s", e[3], mark, e[1], e[4], e[5])
         L[#L + 1] = "   |cffcccccc" .. e[6] .. "|r"
       else
-        L[#L + 1] = string.format("|cffffff00Bald: %s|r (ab Skill %d) – %s, %s", e[3], e[1], e[4], e[5])
+        L[#L + 1] = ns.fmt("|cffffff00Bald: %s|r (ab Skill %d) – %s, %s", e[3], e[1], e[4], e[5])
         L[#L + 1] = "   |cff999999" .. e[6] .. "|r"
       end
     end
@@ -183,7 +183,7 @@ function ns.QuestActions(key, rank)
       if not seen[id] then
         seen[id] = true
         local loc = { e[7], e[8], e[9], e[4] .. " (" .. e[3] .. ")" }
-        out[#out + 1] = { text = "Quest: " .. e[4] .. " – " .. e[3], fn = function() ns.GoToLoc(loc) end }
+        out[#out + 1] = { text = ns.fmt("Quest: %s – %s", e[4], e[3]), fn = function() ns.GoToLoc(loc) end }
       end
     end
   end

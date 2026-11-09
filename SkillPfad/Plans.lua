@@ -187,7 +187,7 @@ ns.plans.alchemie = {
     S(160, 195, "Manatrank", KELP, 38, KINGS, 38), S(195, 205, "Elixier der Beweglichkeit", KELP, 10, GOLDT, 10),
     S(205, 225, "Großer Manatrank", KHAD, 20, GOLDT, 20), S(225, 226, "Stein der Weisen", IR, 4, LOTUS, 4, FIREB, 4),
     S(226, 240, "Großer Manatrank", KHAD, 20, GOLDT, 20), S(240, 260, "Trank Untote entdecken", ARTH, 23),
-    S(260, 270, "Überragender Manatrank", SUN, 20, BLIND, 20), S(270, 300, "Großer Verfärbter Heiltrank", PLAGUE, 31),
+    S(260, 270, "Überragender Manatrank", SUN, 20, BLIND, 20), S(270, 300, "Mächtiger Verfärbter Heiltrank", PLAGUE, 31),
   } },
   { id = "profs", name = "wow-professions (Forever-Beta)", note = "Ab Skill 225 ungetestet; letzte 10 Punkte nicht final.", steps = {
     S(1, 10, "Kleines Arkanelixier", PEACE, 9), S(10, 55, "Elixier der geringen Verteidigung", SILVER, 45, PEACE, 45),

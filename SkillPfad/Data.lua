@@ -102,7 +102,7 @@ ns.defs = {
       { 55,  120, "Erdwurzel, Wilddornrose, Maguskönigskraut", "Mana- und Weisheits-Elixiere; Silberwald, Loch Modan, Dunkelküste" },
       { 120, 150, "Würgetang, Feuerflossen-Schnapper",   "Kleiner Manatrank, Feueröl (30 Öle für später aufheben)" },
       { 150, 225, "Königsblut, Würgetang, Beulengras",  "Manatrank, Elixier der Feuerkraft, Naturschutztrank (Rezept in Feralas); Hügelland, Schlingendorntal, Arathihochland" },
-      { 225, 301, "Arthas' Tränen, Sonnengras, Blindkraut", "Überragender Manatrank 205-240 (Khadgars Schnurrbart, Golddorn), Trank Untote entdecken 240-260 (Arthas' Tränen), Überragender Manatrank 260-270 (Sonnengras, Blindkraut; Rezept Algernon), Großer Verfärbter Heiltrank 270-300 (Pestblüte, Murlocauge; Questreihe bei Apotheker Renferrel, Silberwald)" },
+      { 225, 301, "Arthas' Tränen, Sonnengras, Blindkraut", "Großer Manatrank 205-240 (Khadgars Schnurrbart, Golddorn; bei 225 einmal den Stein der Weisen herstellen und aufheben, Transmutationen brauchen ihn), Trank Untote entdecken 240-260 (Arthas' Tränen), Überragender Manatrank 260-270 (Sonnengras, Blindkraut; Rezept Algernon), Mächtiger Verfärbter Heiltrank 270-300 (Pestblüte, Murlocauge; Questreihe bei Apotheker Renferrel, Silberwald)" },
     },
     hints = {
       { 1,   300, "Heiltränke stellt in Forever die Erste Hilfe her, nicht mehr die Alchemie." },

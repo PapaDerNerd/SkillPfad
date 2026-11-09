@@ -51,17 +51,17 @@ local ev = CreateFrame("Frame")
 
 local function finish()
   scanning, waiting, current = false, false, nil
-  print("|cffffd100SkillPfad:|r Preisscan fertig.")
+  ns.print("|cffffd100SkillPfad:|r Preisscan fertig.")
   if ns.Refresh then ns.Refresh() end
 end
 
 function ns.StartScan()
   if not (CanSendAuctionQuery and QueryAuctionItems) then
-    print("|cffffd100SkillPfad:|r Ein eigener AH-Scan geht in diesem Client nicht. Preise kommen von Auctionator: Suche die Materialien einmal im Auktionshaus, z. B. mit der Auctionator-Liste aus SkillPfad, dann erscheinen die Kosten.")
+    ns.print("|cffffd100SkillPfad:|r Ein eigener AH-Scan geht in diesem Client nicht. Preise kommen von Auctionator: Suche die Materialien einmal im Auktionshaus, z. B. mit der Auctionator-Liste aus SkillPfad, dann erscheinen die Kosten.")
     return
   end
   if not (AuctionFrame and AuctionFrame:IsShown()) then
-    print("|cffffd100SkillPfad:|r Öffne zuerst das Auktionshaus.")
+    ns.print("|cffffd100SkillPfad:|r Öffne zuerst das Auktionshaus.")
     return
   end
   queue = {}
@@ -70,17 +70,17 @@ function ns.StartScan()
     if ns.WeightOf(type(id) == "number" and id or nil) >= 1 then queue[#queue + 1] = name end
   end
   if #queue == 0 then
-    print("|cffffd100SkillPfad:|r Öffne erst das Lederverarbeitung-Fenster, damit ich die Materialien kenne.")
+    ns.print("|cffffd100SkillPfad:|r Öffne erst das Lederverarbeitung-Fenster, damit ich die Materialien kenne.")
     return
   end
   scanning, waiting = true, true
-  print(string.format("|cffffd100SkillPfad:|r Scanne %d Materialien ...", #queue))
+  ns.print(ns.fmt("|cffffd100SkillPfad:|r Scanne %d Materialien ...", #queue))
 end
 
 ev:SetScript("OnUpdate", function()
   if not (scanning and waiting) then return end
   if not (AuctionFrame and AuctionFrame:IsShown()) then
-    scanning = false; print("|cffffd100SkillPfad:|r Scan abgebrochen (AH geschlossen)."); return
+    scanning = false; ns.print("|cffffd100SkillPfad:|r Scan abgebrochen (AH geschlossen)."); return
   end
   if CanSendAuctionQuery() then
     if #queue == 0 then finish(); return end

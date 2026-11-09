@@ -151,7 +151,7 @@ local function scan()
   if not r[1] then
     if not scanErrShown then
       scanErrShown = true
-      print("|cffff4040SkillPfad Scanfehler:|r " .. tostring(r[2]))
+      ns.print("|cffff4040SkillPfad Scanfehler:|r " .. tostring(r[2]))
     end
     return nil
   end
@@ -169,11 +169,11 @@ end
 
 local pending, wantOpen = false, false
 
-local function build(key, rank, maxRank, list, usePrice, cached)
+local function buildRaw(key, rank, maxRank, list, usePrice, cached)
   local def = ns.defs[key]
   local ph = ns.phaseFor(key, rank)
   local L = {}
-  L[#L + 1] = string.format("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
+  L[#L + 1] = ns.fmt("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
   if cached then
     L[#L + 1] = "|cff999999Stand vom letzten Öffnen des Berufsfensters (Skill " .. cached.rank ..
       "). Menge im Beutel ist aktuell, Rezeptfarben evtl. nicht. Öffne das Berufsfenster zum Aktualisieren.|r"
@@ -181,7 +181,7 @@ local function build(key, rank, maxRank, list, usePrice, cached)
   if rank >= maxRank and maxRank < 300 then
     L[#L + 1] = "|cffff8040Maximum erreicht: Lerne beim Lehrer die nächste Stufe.|r"
   end
-  L[#L + 1] = string.format("Aktuelle Phase: |cff00ff00%s|r", ph[3])
+  L[#L + 1] = ns.fmt("Aktuelle Phase: |cff00ff00%s|r", ph[3])
   L[#L + 1] = "Material holen: " .. ph[4]
   for _, h in ipairs(def.hints or {}) do
     if rank >= h[1] and rank <= h[2] then
@@ -205,7 +205,7 @@ local function build(key, rank, maxRank, list, usePrice, cached)
     for k = 1, math.min(SkillPfadDB.topN or 3, #list) do
       local r = list[k]
       local col = (r.type == "optimal") and "|cffff8040" or "|cffffff00"
-      L[#L + 1] = string.format("%d. %s%s|r  (Material für %dx)", k, col, r.name, r.crafts)
+      L[#L + 1] = ns.fmt("%d. %s%s|r  (Material für %dx)", k, col, r.name, r.crafts)
       if usePrice then
         local note = (r.miss > 0) and " (ohne Händlerware)" or ""
         L[#L + 1] = "   Kosten/Herstellung: ~" .. (GetCoinTextureString or GetMoneyString or tostring)(math.floor(r.money)) .. note
@@ -213,7 +213,7 @@ local function build(key, rank, maxRank, list, usePrice, cached)
       for _, m in ipairs(r.reag) do
         local rn, rc, have = m[1], m[2], m[3]
         local c = (have >= rc) and "|cff00ff00" or "|cffff4040"
-        L[#L + 1] = string.format("   %s%s: %d/%d|r", c, rn, have, rc)
+        L[#L + 1] = ns.fmt("   %s%s: %d/%d|r", c, rn, have, rc)
         local src = have < rc and ns.SourceOf(m[4])
         if src then
           L[#L + 1] = "      |cff999999-> " .. src .. "|r"
@@ -233,7 +233,7 @@ local function build(key, rank, maxRank, list, usePrice, cached)
       local id = m[4]
       if id and m[3] < m[2] and ns.LocFor(id) and not seenId[id] and #acts < 6 then
         seenId[id] = true
-        acts[#acts + 1] = { text = "Weg: " .. m[1] .. " besorgen", fn = function() ns.GoToItem(id) end }
+        acts[#acts + 1] = { text = ns.fmt("Weg: %s besorgen", m[1]), fn = function() ns.GoToItem(id) end }
       end
     end
   end
@@ -250,7 +250,21 @@ local function build(key, rank, maxRank, list, usePrice, cached)
   end
 end
 
-local function refresh()
+-- Sichere Huelle: ein Rechenfehler (z.B. kaputter Cache) darf nicht das Fenster oder den Chat fluten
+local lastBuildErr = 0
+local function build(key, ...)
+  local ok, err = pcall(buildRaw, key, ...)
+  if ok then return end
+  if SkillPfadDB.cache then SkillPfadDB.cache[key] = nil end   -- verdaechtigen Cache verwerfen
+  if GetTime() - lastBuildErr > 30 then
+    lastBuildErr = GetTime()
+    ns.print("|cffff4040SkillPfad:|r Anzeige konnte nicht berechnet werden und wurde zurueckgesetzt. Oeffne das Berufsfenster erneut. (" .. tostring(err):sub(1, 160) .. ")")
+  end
+  pcall(ns.SetLines, key, { "Anzeige konnte nicht berechnet werden. Öffne das Berufsfenster erneut." })
+  pcall(ns.SetActions, key, {})
+end
+
+local function refreshRaw()
   pending = false
   local key, rank, maxRank, list, usePrice = scan()
   if not key then wantOpen = false; return end
@@ -267,6 +281,15 @@ local function refresh()
   SkillPfadDB.cache = SkillPfadDB.cache or {}
   SkillPfadDB.cache[key] = { rank = rank, maxRank = maxRank, list = c }
   build(key, rank, maxRank, list, usePrice, nil)
+end
+
+local lastScanErr = 0
+local function refresh()
+  local ok, err = pcall(refreshRaw)
+  if not ok and GetTime() - lastScanErr > 30 then
+    lastScanErr = GetTime()
+    ns.print("|cffff4040SkillPfad:|r Scan fehlgeschlagen (" .. tostring(err):sub(1, 160) .. ")")
+  end
 end
 
 local function queue()
@@ -306,7 +329,7 @@ for key, def in pairs(ns.defs) do
     if r then
       local ph = ns.phaseFor(key, r)
       L[#L + 1] = " "
-      L[#L + 1] = string.format("Zuletzt bekannter Skill: %d", r)
+      L[#L + 1] = ns.fmt("Zuletzt bekannter Skill: %d", r)
       L[#L + 1] = "Phase: |cff00ff00" .. ph[3] .. "|r"
       L[#L + 1] = "Material holen: " .. ph[4]
     end
@@ -359,31 +382,42 @@ end)
 local function handle(msg, default)
   msg = (msg or ""):lower():match("^%s*(.-)%s*$")
   if msg == "reset" then
-    ns.ResetPos(); print("SkillPfad: Position zurückgesetzt.")
+    ns.ResetPos(); ns.print("SkillPfad: Position zurückgesetzt.")
   elseif msg == "api" then
     local function has(n) return (_G[n] ~= nil) and "ja" or "NEIN" end
-    print("SkillPfad API: GetTradeSkillLine " .. has("GetTradeSkillLine") ..
+    ns.print("SkillPfad API: GetTradeSkillLine " .. has("GetTradeSkillLine") ..
       ", GetNumTradeSkills " .. has("GetNumTradeSkills") .. ", TradeSkillFrame " .. has("TradeSkillFrame") ..
       ", C_TradeSkillUI " .. has("C_TradeSkillUI") .. ", C_SkillInfo " .. has("C_SkillInfo") ..
       ", TomTom " .. has("TomTom"))
     do
       local k, r, m = modernInfo()
       local nrec = (C_TradeSkillUI and C_TradeSkillUI.GetAllRecipeIDs and #C_TradeSkillUI.GetAllRecipeIDs()) or "?"
-      print("SkillPfad: Fenster sichtbar " .. tostring(frameShown()) .. ", erkannter Beruf " .. tostring(k) ..
+      ns.print("SkillPfad: Fenster sichtbar " .. tostring(frameShown()) .. ", erkannter Beruf " .. tostring(k) ..
         " " .. tostring(r) .. "/" .. tostring(m) .. ", Rezepte " .. tostring(nrec) ..
         ", ProfessionsFrame " .. has("ProfessionsFrame"))
       local ok, res = pcall(scanModern)
-      print("SkillPfad: Scan " .. tostring(ok) .. " " .. (ok and (res and "ok" or "nil") or tostring(res)))
+      ns.print("SkillPfad: Scan " .. tostring(ok) .. " " .. (ok and (res and "ok" or "nil") or tostring(res)))
     end
     if C_TradeSkillUI and C_TradeSkillUI.GetBaseProfessionInfo then
       local ok, p = pcall(C_TradeSkillUI.GetBaseProfessionInfo)
-      if ok and p then print("Aktuelles Handwerk: " .. tostring(p.professionName) .. " " .. tostring(p.skillLevel) .. "/" .. tostring(p.maxSkillLevel)) end
+      if ok and p then ns.print("Aktuelles Handwerk: " .. tostring(p.professionName) .. " " .. tostring(p.skillLevel) .. "/" .. tostring(p.maxSkillLevel)) end
     end
+  elseif msg == "lang" or msg:match("^lang%s") or msg == "sprache" or msg:match("^sprache%s") then
+    local a = msg:match("^%a+%s+(%a+)")
+    if a == "de" or a == "en" then ns.SetLang(a)
+    elseif a == "auto" then ns.SetLang(nil)
+    else
+      local l = SkillPfadDB.lang
+      ns.SetLang((l == nil and "de") or (l == "de" and "en") or nil)
+    end
+    if ns.UpdateOptions then ns.UpdateOptions() end
+    ns.print("|cffffd100SkillPfad:|r Sprache: " .. (ns.lang == "en" and "English" or "Deutsch") ..
+      (SkillPfadDB.lang == nil and " (auto)" or "") .. "  –  /sp lang de | en | auto")
   elseif msg == "scan" then
     ns.StartScan()
   elseif msg == "preis" then
     SkillPfadDB.price = not SkillPfadDB.price
-    print("SkillPfad: Sortierung nach " .. (SkillPfadDB.price and "AH-Preisen" or "Farm-Aufwand"))
+    ns.print("SkillPfad: Sortierung nach " .. (SkillPfadDB.price and "AH-Preisen" or "Farm-Aufwand"))
     ns.Refresh()
   elseif msg == "weg" or msg:match("^weg%s") then ns.WegCommand(msg:sub(4))
   elseif msg == "mapcheck" then ns.MapCheck()
@@ -394,10 +428,10 @@ local function handle(msg, default)
     local key = (arg ~= "" and (ns.alias[arg] or arg)) or "leder"
     local r = ns.NextRoute(key)
     if r then
-      print("|cffffd100SkillPfad:|r Route für " .. key .. ": " .. r.name)
+      ns.print("|cffffd100SkillPfad:|r Route für " .. key .. ": " .. r.name)
       if ns.RefreshAll then ns.RefreshAll() end
     else
-      print("|cffffd100SkillPfad:|r Für diesen Beruf gibt es nur eine Route. Beispiele: /sp route leder, /sp route schmied, /sp route ingenieur, /sp route alchemie")
+      ns.print("|cffffd100SkillPfad:|r Für diesen Beruf gibt es nur eine Route. Beispiele: /sp route leder, /sp route schmied, /sp route ingenieur, /sp route alchemie")
     end
   elseif msg == "einst" or msg == "opt" then ns.OpenWindow("opt")
   elseif default then ns.OpenWindow(default)

@@ -35,8 +35,8 @@ end)
 
 SLASH_SKILLPFADDIAG1 = "/spdiag"
 SlashCmdList["SKILLPFADDIAG"] = function()
-  if #errs == 0 then print("SkillPfad: keine Fehler gespeichert.") end
-  for i, e in ipairs(errs) do print(i, e:sub(1, 600)) end
+  if #errs == 0 then ns.print("SkillPfad: keine Fehler gespeichert.") end
+  for i, e in ipairs(errs) do ns.print(i, e:sub(1, 600)) end
 end
 
 -- Ereignisse nur anmelden, wenn der Client sie kennt (sonst Fehlermeldung)

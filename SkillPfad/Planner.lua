@@ -22,7 +22,14 @@ local function have(id)
   if C_Item and C_Item.GetItemCount then return C_Item.GetItemCount(id, true) or 0 end
   return GetItemCount and GetItemCount(id, true) or 0
 end
-local function nameOf(id) return (ns.itemName and ns.itemName[id]) or ("item:" .. id) end
+local function nameOf(id)
+  -- Nicht-deutsche Clients: Itemname aus dem Client (passt zu AH und Auctionator)
+  if GetLocale and GetLocale() ~= "deDE" and ns.ClientItemName then
+    local cn = ns.ClientItemName(id)
+    if cn then return cn end
+  end
+  return (ns.itemName and ns.itemName[id]) or ("item:" .. id)
+end
 
 ---------------------------------------------------------------- Routen
 local function routeList(craft) return ns.plans and ns.plans[craft] end
@@ -96,7 +103,7 @@ local function oreHint(id, lack)
   local parts = {}
   local y = sm.yield or 1
   for i = 1, #sm, 2 do
-    parts[#parts + 1] = string.format("%d %s", math.ceil(lack / y), nameOf(sm[i]))
+    parts[#parts + 1] = ns.fmt("%d %s", math.ceil(lack / y), nameOf(sm[i]))
   end
   return " = " .. table.concat(parts, " + ")
 end
@@ -116,7 +123,7 @@ function ns.PlanLines(craft, rank, tag, gatherRank)
       local lack = math.max(0, need[id] - h)
       local c = lack == 0 and "|cff00ff00" or "|cffff4040"
       local where = WHERE[id] and ("  |cff999999(" .. WHERE[id] .. ")|r") or ""
-      L[#L + 1] = string.format("   %s: %d nötig, %d da -> %s%d fehlen|r%s%s", nameOf(id), need[id], math.min(h, need[id]), c,
+      L[#L + 1] = ns.fmt("   %s: %d nötig, %d da -> %s%d fehlen|r%s%s", nameOf(id), need[id], math.min(h, need[id]), c,
         lack, (lack > 0) and oreHint(id, lack) or "", where)
       if t == "skin" then
         animals = animals + math.ceil(lack / ((id == 15408 or id == 783 or id == 4232 or id == 4235 or id == 8171) and 1 or PER_ANIMAL))
@@ -125,7 +132,7 @@ function ns.PlanLines(craft, rank, tag, gatherRank)
   end
   if not any then return {} end
   if tag == "skin" and animals > 0 then
-    L[#L + 1] = string.format("   Das sind ca. |cffffd100%d|r gehäutete Tiere (Annahme: %.1f Leder je Tier).", animals, PER_ANIMAL)
+    L[#L + 1] = ns.fmt("   Das sind ca. |cffffd100%d|r gehäutete Tiere (Annahme: %.1f Leder je Tier).", animals, PER_ANIMAL)
   end
   return L, R
 end
@@ -169,12 +176,12 @@ function ns.RouteCompareLines(craft, rank)
   for _, x in ipairs(rows) do
     local mark = (x == best) and " |cff00ff00<- günstigste|r" or ""
     local nb = x.r.partial and " |cffff8040(Quelle unvollständig)|r" or ""
-    nb = nb .. (x.noPrice > 0 and string.format(" |cffffff00(%d Posten ohne Preis)|r", x.noPrice) or "")
+    nb = nb .. (x.noPrice > 0 and ns.fmt(" |cffffff00(%d Posten ohne Preis)|r", x.noPrice) or "")
     if x.total <= 0 and x.noPrice > 0 then
-      out[#out + 1] = string.format("   %s: |cffffff00noch keine Preise (%d Posten)|r%s", x.r.name, x.noPrice,
+      out[#out + 1] = ns.fmt("   %s: |cffffff00noch keine Preise (%d Posten)|r%s", x.r.name, x.noPrice,
         x.r.partial and " |cffff8040(Quelle unvollständig)|r" or "")
     else
-      out[#out + 1] = string.format("   %s: ca. %s%s%s", x.r.name, gold(x.total), nb, mark)
+      out[#out + 1] = ns.fmt("   %s: ca. %s%s%s", x.r.name, gold(x.total), nb, mark)
     end
   end
   local anyPrice = false
@@ -201,7 +208,7 @@ end
 function ns.SendShoppingList(craft, rank, target)
   local api = Auctionator and Auctionator.API and Auctionator.API.v1
   if not (api and api.CreateShoppingList and api.ConvertToSearchString) then
-    print("|cffff4040SkillPfad:|r Auctionator mit Einkaufslisten-Schnittstelle nicht gefunden.")
+    ns.print("|cffff4040SkillPfad:|r Auctionator mit Einkaufslisten-Schnittstelle nicht gefunden.")
     return
   end
   local need, order = ns.PlanNeeds(craft, rank or 1, nil, target)
@@ -215,15 +222,15 @@ function ns.SendShoppingList(craft, rank, target)
     end
   end
   if #terms == 0 then
-    print("|cffffd100SkillPfad:|r Es fehlt nichts bis Skill " .. target .. " – keine Liste nötig.")
+    ns.print("|cffffd100SkillPfad:|r Es fehlt nichts bis Skill " .. target .. " – keine Liste nötig.")
     return
   end
-  local name = "SkillPfad: " .. ((ns.defs[craft] and ns.defs[craft].label) or craft)
+  local name = ns.tr("SkillPfad: " .. ((ns.defs[craft] and ns.defs[craft].label) or craft))
   local ok, err = pcall(api.CreateShoppingList, "SkillPfad", name, terms)
   if ok then
-    print(string.format("|cffffd100SkillPfad:|r Auctionator-Liste '%s' mit %d Posten (bis Skill %d) angelegt. Am Auktionshaus im Reiter 'Einkaufslisten' öffnen.", name, #terms, target))
+    ns.print(ns.fmt("|cffffd100SkillPfad:|r Auctionator-Liste '%s' mit %d Posten (bis Skill %d) angelegt. Am Auktionshaus im Reiter 'Einkaufslisten' öffnen.", name, #terms, target))
   else
-    print("|cffff4040SkillPfad:|r Liste konnte nicht angelegt werden: " .. tostring(err))
+    ns.print("|cffff4040SkillPfad:|r Liste konnte nicht angelegt werden: " .. tostring(err))
   end
 end
 
@@ -234,10 +241,10 @@ function ns.ShoppingActions(craft, rank, phaseEnd)
   if not ns.RouteOf(craft) then return out end
   local label = (ns.defs[craft] and ns.defs[craft].label) or craft
   if phaseEnd and phaseEnd < 300 then
-    out[#out + 1] = { text = string.format("Auctionator-Liste: %s bis Skill %d", label, phaseEnd),
+    out[#out + 1] = { text = ns.fmt("Auctionator-Liste: %s bis Skill %d", label, phaseEnd),
                       fn = function() ns.SendShoppingList(craft, rank or 1, phaseEnd) end }
   end
-  out[#out + 1] = { text = string.format("Auctionator-Liste: %s bis Skill 300", label),
+  out[#out + 1] = { text = ns.fmt("Auctionator-Liste: %s bis Skill 300", label),
                     fn = function() ns.SendShoppingList(craft, rank or 1, 300) end }
   return out
 end
@@ -251,7 +258,7 @@ function ns.GatherPlanLines(key, gatherRank)
     local L, R = ns.PlanLines(craft, cr or 1, key, gatherRank)
     if R and #L > 0 then
       if #out == 0 then out[1] = " "; out[2] = "|cffffd100Planung beider Berufe:|r" end
-      out[#out + 1] = string.format("|cffffd100Für %s%s|r bis Skill 300 – Route: %s", def and def.label or craft,
+      out[#out + 1] = ns.fmt("|cffffd100Für %s%s|r bis Skill 300 – Route: %s", def and def.label or craft,
         cr and (" (Skill " .. cr .. ")") or " (ab Skill 1)", R.name)
       out[#out + 1] = "|cff999999" .. R.note .. " Wechseln: /sp route " .. craft .. "|r"
       for _, l in ipairs(L) do out[#out + 1] = l end
@@ -259,7 +266,7 @@ function ns.GatherPlanLines(key, gatherRank)
     end
   end
   if key == "skin" and gatherRank then
-    out[#out + 1] = string.format("   Dein Kürschnerskill %d reicht für Mobs bis Level ~%d (Skill = 5 x Mob-Level).",
+    out[#out + 1] = ns.fmt("   Dein Kürschnerskill %d reicht für Mobs bis Level ~%d (Skill = 5 x Mob-Level).",
       gatherRank, math.max(1, math.floor(gatherRank / 5)))
   end
   return out
