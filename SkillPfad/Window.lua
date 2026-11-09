@@ -341,7 +341,7 @@ local controls = {}
 local function check(name, label, key, y, onChange)
   local c = CreateFrame("CheckButton", "SkillPfadChk" .. name, opt, "UICheckButtonTemplate")
   c:SetPoint("TOPLEFT", 0, y)
-  local t = _G[c:GetName() .. "Text"]
+  local t = ns.WrapObj(_G[c:GetName() .. "Text"])
   t:SetText(label); t:SetWidth(240); t:SetJustifyH("LEFT")
   c:SetScript("OnClick", function(self)
     SkillPfadDB[key] = self:GetChecked() and true or false
@@ -365,7 +365,7 @@ profHead:SetPoint("TOPLEFT", 300, 0); profHead:SetText("Berufe anzeigen")
 for i, key in ipairs(ns.order) do
   local c = CreateFrame("CheckButton", "SkillPfadProf" .. key, opt, "UICheckButtonTemplate")
   c:SetPoint("TOPLEFT", 296, -18 - (i - 1) * 26)
-  local t = _G[c:GetName() .. "Text"]
+  local t = ns.WrapObj(_G[c:GetName() .. "Text"])
   t:SetText(ns.defs[key].label); t:SetWidth(130); t:SetJustifyH("LEFT")
   c:SetScript("OnClick", function(self)
     SkillPfadDB.off = SkillPfadDB.off or {}
