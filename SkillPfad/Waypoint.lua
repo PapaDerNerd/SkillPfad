@@ -160,11 +160,16 @@ end
 ------------------------------------------------------------ Befehle: /sp weg <Name oder Link>
 local function findItem(q)
   local id = tonumber(q:match("[Ii]tem:(%d+)"))
-  if id and ns.loc and ns.loc[id] then return id end
+  if id and ns.LocFor(id) then return id end
   q = q:lower()
   local exact, part
-  for iid in pairs(ns.loc or {}) do
-    local names = { (ns.locName[iid] or ""):lower() }
+  local ids = {}
+  for iid in pairs(ns.loc or {}) do ids[iid] = true end
+  if ns.IsAlly() then for iid in pairs(ns.locA or {}) do ids[iid] = true end end
+  for iid in pairs(ids) do
+    local de = ns.locName[iid] or ""
+    local names = { de:lower() }
+    if ns.lang == "en" and de ~= "" then names[#names + 1] = ns.tr(de):lower() end   -- englischer Name aus dem Woerterbuch
     local cn = GetItemInfo and GetItemInfo(iid)
     if cn then names[#names + 1] = cn:lower() end
     for _, n in ipairs(names) do
@@ -176,9 +181,12 @@ end
 
 local function findTrainer(q)
   q = q:lower()
-  for en, loc in pairs(ns.trainer or {}) do
-    if en:lower():find(q, 1, true) or loc[4]:lower():find(q, 1, true) then return loc end
+  local function search(tbl)
+    for en, loc in pairs(tbl or {}) do
+      if en:lower():find(q, 1, true) or loc[4]:lower():find(q, 1, true) then return loc end
+    end
   end
+  return (ns.IsAlly() and search(ns.trainerA)) or search(ns.trainer)
 end
 
 function ns.WegCommand(arg)

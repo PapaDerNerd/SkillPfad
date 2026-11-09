@@ -26,7 +26,8 @@ ev:RegisterEvent("PLAYER_LOGIN")
 ev:RegisterEvent("PLAYER_LOGOUT")
 ev:SetScript("OnEvent", function(_, e)
   if e == "PLAYER_LOGIN" then
-    if seterrorhandler and old then seterrorhandler(old) end
+    -- nur zuruecksetzen, wenn noch unser Handler aktiv ist (sonst wuerde z.B. BugSack ueberschrieben)
+    if seterrorhandler and old and geterrorhandler() == handler then seterrorhandler(old) end
     show()
   else
     SkillPfadDB.errors = errs

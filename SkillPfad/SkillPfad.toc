@@ -3,7 +3,8 @@
 ## Notes-deDE: Berufs-Guide fuer alle Berufe: Skill-Weg, Material, Fundorte, AH-Preise, TomTom-Wegpunkte (/sp)
 ## Notes: Profession guide for all professions (German/English): skill path, materials, locations, AH prices, TomTom waypoints (/sp)
 ## Author: PapaDerNerd
-## Version: 1.11.2
+## Version: 1.11.3
+## IconTexture: Interface\Icons\INV_Misc_Book_09
 ## OptionalDeps: TomTom, Auctionator
 ## SavedVariables: SkillPfadDB
 

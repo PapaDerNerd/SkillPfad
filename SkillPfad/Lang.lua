@@ -7,12 +7,12 @@ local function clientLang()
   return (loc == "deDE") and "de" or "en"
 end
 ns.lang = clientLang()
-local cache = {}
+local cache, cacheN = {}, 0
 
 function ns.SetLang(l)   -- l = "de" | "en" | nil (automatisch)
   if SkillPfadDB then SkillPfadDB.lang = l end
   ns.lang = l or clientLang()
-  cache = {}
+  cache, cacheN = {}, 0
   if ns.RefreshAll then pcall(ns.RefreshAll) end
   if ns.RelabelUI then pcall(ns.RelabelUI) end
 end
@@ -21,7 +21,7 @@ function ns.InitLang()   -- nach dem Laden der SavedVariables
   local l = SkillPfadDB and SkillPfadDB.lang
   if l ~= "de" and l ~= "en" then l = nil end
   ns.lang = l or clientLang()
-  cache = {}
+  cache, cacheN = {}, 0
 end
 
 local function esc(s) return (s:gsub("%p", "%%%0")) end
@@ -44,7 +44,8 @@ function ns.tr(s)
   if r:find("\1", 1, true) then
     r = r:gsub("\1(%d+)\2", function(n) return dict[tonumber(n)][2] end)
   end
-  cache[s] = r
+  if cacheN >= 400 then cache, cacheN = {}, 0 end   -- Texte mit Zahlen aendern sich staendig: Cache klein halten
+  cache[s] = r; cacheN = cacheN + 1
   return r
 end
 

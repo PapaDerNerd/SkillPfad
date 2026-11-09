@@ -299,7 +299,12 @@ local function queue()
 end
 
 function ns.Refresh()
-  if openKey() then queue() end
+  if openKey() then queue(); return end
+  -- Berufsfenster zu: gemerkten Stand des aktuellen Tabs neu rechnen (z.B. nach Umschalten der Sortierung)
+  if ns.WindowShown() then
+    local t = ns.CurrentTab and ns.CurrentTab()
+    if t and ns.tabRefresh[t] then pcall(ns.tabRefresh[t]) end
+  end
 end
 
 -- Wird beim Wechsel auf einen Berufs-Tab aufgerufen
@@ -322,7 +327,15 @@ for key, def in pairs(ns.defs) do
         list[#list + 1] = { name = e.name, type = e.type, money = e.money or 0, miss = e.miss or 0,
           reag = reag, crafts = crafts, wscore = e.wscore, mscore = e.mscore }
       end
-      build(key, r or cc.rank, cc.maxRank or 300, list, SkillPfadDB.price and true or false, cc)
+      local usePrice = false
+      if SkillPfadDB.price then
+        for _, e in ipairs(list) do if (e.mscore or 0) > 0 then usePrice = true; break end end
+      end
+      table.sort(list, function(a, b)
+        if usePrice and a.mscore ~= b.mscore then return (a.mscore or 0) < (b.mscore or 0) end
+        return (a.wscore or 0) < (b.wscore or 0)
+      end)
+      build(key, r or cc.rank, cc.maxRank or 300, list, usePrice, cc)
       return
     end
     local L = { "Öffne dein " .. def.label .. "-Fenster für Empfehlungen." }
@@ -348,10 +361,13 @@ ns.Reg(ev, "TRADE_SKILL_LIST_UPDATE")
 ns.Reg(ev, "TRADE_SKILL_DATA_SOURCE_CHANGED")
 ns.Reg(ev, "SKILL_LINES_CHANGED")
 -- Der Client kennt evtl. nicht alle Klassik-Ereignisse: Fenster zusaetzlich per Abfrage beobachten
-local wasOpen = false
+-- Oeffnen/Schliessen wird alle 0,7 s geprueft, neu gescannt nur etwa alle 3 s (Ereignisse loesen sofort aus)
+local wasOpen, tick = false, 0
 C_Timer.NewTicker(0.7, function()
+  tick = tick + 1
   local shown = ns.TradeFrameShown()
   if shown and not wasOpen then wantOpen = true; wasOpen = true; if openKey() then queue() end
+    if ns.UpdateOpenBtn and ns.WindowShown() then ns.UpdateOpenBtn(ns.CurrentTab()) end
   elseif not shown and wasOpen then
     wasOpen = false; wantOpen = false
     if ns.autoOpened and ns.WindowShown() then ns.CloseWindow()
@@ -360,11 +376,12 @@ C_Timer.NewTicker(0.7, function()
       if t and ns.tabRefresh[t] then ns.tabRefresh[t]() end
       if ns.UpdateOpenBtn then ns.UpdateOpenBtn(t) end
     end
-  elseif shown and openKey() and ns.WindowShown() then queue() end
+  elseif shown and tick % 4 == 0 and ns.WindowShown() and openKey() then queue() end
 end)
 if hooksecurefunc and TradeSkillFrame_SetSelection then
   hooksecurefunc("TradeSkillFrame_SetSelection", function() if openKey() then queue() end end)
 end
+local bagPending = false
 ev:SetScript("OnEvent", function(_, e)
   if e == "TRADE_SKILL_SHOW" then
     wantOpen = true
@@ -372,8 +389,22 @@ ev:SetScript("OnEvent", function(_, e)
     wantOpen = false
     if ns.autoOpened and ns.WindowShown() then ns.CloseWindow() end
     return
-  elseif e == "BAG_UPDATE_DELAYED" and not ns.WindowShown() then
-    return
+  elseif e == "BAG_UPDATE_DELAYED" then
+    if not ns.WindowShown() then return end
+    if not openKey() then
+      -- Berufsfenster zu: Beutelmengen im sichtbaren Tab nachfuehren (gebremst)
+      if not bagPending then
+        bagPending = true
+        C_Timer.After(0.5, function()
+          bagPending = false
+          if ns.WindowShown() and not openKey() then
+            local t = ns.CurrentTab and ns.CurrentTab()
+            if t and ns.tabRefresh[t] then pcall(ns.tabRefresh[t]) end
+          end
+        end)
+      end
+      return
+    end
   end
   if openKey() then queue() end
 end)
@@ -383,6 +414,14 @@ local function handle(msg, default)
   msg = (msg or ""):lower():match("^%s*(.-)%s*$")
   if msg == "reset" then
     ns.ResetPos(); ns.print("SkillPfad: Position zurückgesetzt.")
+  elseif msg == "help" or msg == "befehle" or msg == "?" then
+    ns.print("|cffffd100SkillPfad – Befehle:|r")
+    ns.print("  /sp – Fenster öffnen/schließen;  /sp opt – Optionen")
+    ns.print("  /sp leder, /sp kochen, /sp alchemie ... – Beruf direkt öffnen")
+    ns.print("  /sp weg <Material oder Lehrer> – Wegpunkt setzen;  /sp weg aus – Wegpunkte löschen")
+    ns.print("  /sp route <Beruf> – Route wechseln;  /sp preis – Sortierung umschalten (AH-Preise / Farm-Aufwand)")
+    ns.print("  /sp lang de | en | auto – Sprache;  /sp reset – Fensterposition zurücksetzen")
+    ns.print("  /sp check – Selbsttest;  /spdiag – Ladefehler;  /sp mapcheck – Karten-IDs prüfen")
   elseif msg == "api" then
     local function has(n) return (_G[n] ~= nil) and "ja" or "NEIN" end
     ns.print("SkillPfad API: GetTradeSkillLine " .. has("GetTradeSkillLine") ..

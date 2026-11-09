@@ -21,7 +21,8 @@
 - **Mehrere Routen** pro Beruf mit Kostenvergleich; **Paarungen** wie Bergbau ↔ Schmiedekunst, Kräuterkunde ↔ Alchemie, Angeln ↔ Kochen.
 - **Berufe ein-/ausschalten**, wenn du nicht alles skillst.
 - **Empfehlungen auch ohne offenes Berufsfenster** (letzter Stand) und Knopf „Beruf öffnen“.
-- **Selbsttest** mit `/sp check`.
+- **Deutsch und Englisch:** automatisch nach Client-Sprache, umschaltbar mit `/sp lang de|en|auto`.
+- **Selbsttest** mit `/sp check`, Befehlsübersicht mit `/sp help`.
 
 ## Installation
 

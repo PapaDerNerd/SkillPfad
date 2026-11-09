@@ -46,12 +46,19 @@ f:SetBackdrop({
 })
 f:SetMovable(true); f:EnableMouse(true); f:RegisterForDrag("LeftButton")
 f:SetClampedToScreen(true); f:SetFrameStrata("HIGH")
-f:SetScript("OnDragStart", function(s) if not SkillPfadDB.locked then s:StartMoving() end end)
+f:SetScript("OnDragStart", function(s)
+  if SkillPfadDB.locked then return end
+  s:StartMoving()
+  s:SetScript("OnUpdate", function() if ns.UpdateOpenBtn then ns.UpdateOpenBtn(ns.CurrentTab()) end end)
+end)
 f:SetScript("OnDragStop", function(s)
   s:StopMovingOrSizing()
+  s:SetScript("OnUpdate", nil)
   local p, _, rp, x, y = s:GetPoint()
   SkillPfadDB.pos = { p, rp, x, y }
+  if ns.UpdateOpenBtn then ns.UpdateOpenBtn(ns.CurrentTab()) end
 end)
+f:SetScript("OnHide", function() if ns.UpdateOpenBtn then ns.UpdateOpenBtn(nil) end end)
 f:Hide()
 tinsert(UISpecialFrames, "SkillPfadWindow")   -- ESC schliesst
 
@@ -102,16 +109,24 @@ barText:SetPoint("CENTER")
 bar:Hide()
 
 -- Knopf: Berufsfenster oeffnen (Zauber wirken ist geschuetzt, daher ein sicherer Knopf)
-local openBtn = CreateFrame("Button", "SkillPfadOpenProf", pane, "SecureActionButtonTemplate,UIPanelButtonTemplate")
-openBtn:SetSize(104, 22); openBtn:SetPoint("TOPRIGHT", -170, -19)
+-- Der Knopf haengt absichtlich NICHT am Fenster: ein geschuetzter Knopf als Kind (oder verankert) wuerde das
+-- ganze Fenster schuetzen, es liesse sich im Kampf dann nicht oeffnen, schliessen oder verschieben.
+-- Er liegt deshalb auf UIParent und wird ausserhalb des Kampfes an die passende Stelle gesetzt.
+local openBtn = CreateFrame("Button", "SkillPfadOpenProf", UIParent, "SecureActionButtonTemplate,UIPanelButtonTemplate")
+openBtn:SetSize(104, 22)
+openBtn:SetFrameStrata("HIGH"); openBtn:SetFrameLevel(50)
 openBtn:SetText("Beruf öffnen")
 openBtn:SetAttribute("type", "spell")
 openBtn:RegisterForClicks("AnyUp", "AnyDown")
 openBtn:Hide()
 local function updateOpenBtn(key)
-  if InCombatLockdown and InCombatLockdown() then return end
+  if InCombatLockdown and InCombatLockdown() then return end   -- im Kampf nicht anfassen
   local d = key and ns.defs[key]
-  if d and not d.gather and not (ns.TradeFrameShown and ns.TradeFrameShown()) then
+  local r, t = pane:GetRight(), pane:GetTop()
+  if f:IsShown() and r and t and d and not d.gather and not (ns.TradeFrameShown and ns.TradeFrameShown()) then
+    openBtn:SetScale(f:GetScale())
+    openBtn:ClearAllPoints()
+    openBtn:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", r - 170, t - 19)
     openBtn:SetAttribute("spell", ns.SpellName and ns.SpellName(key) or d.label)
     openBtn:Show()
   else
@@ -301,14 +316,27 @@ layoutTabs()
 
 
 ------------------------------------------------------------ Schnittstelle
+-- Neu gezeichnet wird nur, wenn sich der Inhalt wirklich geaendert hat (spart Rechenzeit beim Dauer-Scan)
+local lineSig, actSig = {}, {}
 function ns.SetActions(tab, list)
+  local t = {}
+  for i, a in ipairs(list) do t[i] = a.text end
+  local sig = table.concat(t, "\n")
+  local same = (actSig[tab] == sig)
+  actSig[tab] = sig
   actions[tab] = list
-  if f:IsShown() and current == tab then render() end
+  if not (f:IsShown() and current == tab) then return end
+  if same then
+    for i, a in ipairs(list) do if btnPool[i] then btnPool[i].fn = a.fn end end
+  else render() end
 end
 
 function ns.SetLines(tab, l)
+  local sig = table.concat(l, "\n")
+  local same = (lineSig[tab] == sig)
+  lineSig[tab] = sig
   lines[tab] = l
-  if f:IsShown() and current == tab then render() end
+  if not same and f:IsShown() and current == tab then render() end
 end
 
 function ns.PlaceWindow()
@@ -333,7 +361,7 @@ end
 function ns.CloseWindow() f:Hide() end
 function ns.WindowShown() return f:IsShown() end
 function ns.CurrentTab() return current end
-function ns.ResetPos() SkillPfadDB.pos = nil; if f:IsShown() then ns.PlaceWindow() end end
+function ns.ResetPos() SkillPfadDB.pos = nil; if f:IsShown() then ns.PlaceWindow(); updateOpenBtn(current) end end
 
 ------------------------------------------------------------ Einstellungen: Steuerelemente
 local controls = {}
@@ -398,7 +426,7 @@ end
 slider("TopN",  "Angezeigte Rezepte", "topN", -190, 1, 5, 1, "%d",
   function() if ns.Refresh then ns.Refresh() end end)
 slider("Scale", "Fenstergröße", "scale", -246, 0.7, 1.3, 0.05, "%.2f",
-  function(v) f:SetScale(v) end)
+  function(v) f:SetScale(v); if ns.UpdateOpenBtn then ns.UpdateOpenBtn(ns.CurrentTab()) end end)
 
 local function button(label, y, onClick)
   local b = CreateFrame("Button", nil, opt, "UIPanelButtonTemplate")
@@ -496,4 +524,13 @@ init:SetScript("OnEvent", function(_, _, name)
   if ns.InitLang then ns.InitLang() end
   if ns.RelabelUI then ns.RelabelUI() end
   f:SetScale(SkillPfadDB.scale or 1)
+end)
+
+-- Kampf: der geschuetzte Knopf wird vorher ausgeblendet und danach wieder gezeigt
+local combat = CreateFrame("Frame")
+combat:RegisterEvent("PLAYER_REGEN_DISABLED")
+combat:RegisterEvent("PLAYER_REGEN_ENABLED")
+combat:SetScript("OnEvent", function(_, e)
+  if e == "PLAYER_REGEN_DISABLED" then openBtn:Hide()
+  elseif f:IsShown() then updateOpenBtn(current) end
 end)

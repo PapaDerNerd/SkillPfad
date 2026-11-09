@@ -2,7 +2,7 @@
 
 [Deutsche Version](README.md)
 
-**Profession guide for WoW Forever (Classic ruleset).** For all 12 professions SkillPfad shows the best path from 1 to 300: which recipe to craft next, the materials needed, where to get them, their auction house price, and optionally sets TomTom waypoints. The UI text is currently **German**.
+**Profession guide for WoW Forever (Classic ruleset).** For all 12 professions SkillPfad shows the best path from 1 to 300: which recipe to craft next, the materials needed, where to get them, their auction house price, and optionally sets TomTom waypoints. The UI is available in **English and German** (chosen by client language, switch with `/sp lang de|en|auto`).
 
 ![Leatherworking: skill path, quests and best recipes](docs/images/leder-guide.jpg)
 
@@ -20,7 +20,7 @@
 - Shopping list with costs (Auctionator or own scan) and **one-click export to an Auctionator shopping list**.
 - Several routes per profession with cost comparison; gatherer/crafter pairings.
 - Recommendations stay visible without the profession window (last known state), plus an "open profession" button.
-- Switch professions on/off. Self-test with `/sp check`.
+- Switch professions on/off. Self-test with `/sp check`. Command overview with `/sp help` (slash keywords are German, e.g. `/sp leder`).
 
 ## Installation
 
