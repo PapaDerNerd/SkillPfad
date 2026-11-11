@@ -32,6 +32,7 @@ ns.defs = {
     hints = {
       { 50,  75,  "Geselle: Lehrer ab Skill 50 (Lvl 10), z.B. Karolek in Orgrimmar. Ohne Geselle gibt es ab 75 keine Skillpunkte." },
       { 125, 150, "Experte: Skill 125, Lvl 20, 50 Silber, z.B. Una in Donnerfels." },
+      { 125, 145, "Gerberrahmen (Hotfix 6.11.): Skillanforderung von 140 auf 125 gesenkt, Skillpunkte dort um 15 reduziert. Muster ab 125 sind damit nicht mehr blockiert." },
       { 200, 225, "Artisan: Skill 200, Lvl 35, Hahrana Ironhide (Camp Mojache, Feralas)." },
       { 225, 300, "Ab 225 laut Guide ungetestet. Muster: Boshafte Lederstulpen (Werg Thickblade, Tirisfal) ab 235, Runenlederstirnband (Jase Farlane, Lichtgrenze) ab 265." },
     },
@@ -42,9 +43,10 @@ ns.defs = {
     names = { ["Skinning"] = true, ["Kürschnerei"] = true },
     phases = {
       { 1,   75,  "Starterzone",        "Gesprenkelte Eber im Tal der Prüfungen / Durotar (Mob-Lvl 1-2)" },
-      { 75,  150, "Brachland / Loch Modan", "Raptorenlager westlich von Nordwacht (Lvl 16-18); Alternative: Loch Modan 75-125, Sumpfland (Whelgars Ausgrabung) 125-150" },
-      { 150, 225, "Hügelland",          "Höhlen im Vorgebirge des Hügellands (Yetis Lvl 30-32, ab Tarrens Mühle) oder Verrottender Obstgarten im Dämmerwald (Lvl 26-29)" },
-      { 225, 280, "Feralas",            "Feral-Scar-Tal in Feralas (Yetis Lvl 43-46, ab Camp Mojache)" },
+      { 75,  125, "Brachland / Loch Modan", "Brachland nahe Kreuzweg beginnen (Mob-Level steigen nach Süden), Loch Modan im Westen bei Thelsamar beginnen, Alternative: Dunkelküste" },
+      { 125, 175, "Eschental / Hügelland",  "Eschental, Dämmerwald, Vorgebirge des Hügellands (Bären und Löwen in der Mitte, ab Tarrens Mühle), Sumpfland; kurz vor 175 weiterziehen, da die Skillpunkte langsamer kommen" },
+      { 175, 225, "Arathihochland / Schlingendorntal", "Arathihochland (Raptoren Lvl 30-34 westlich von Refuge Point, Lvl 36-37 südöstlich), Schlingendorntal (Norden Lvl 30-33, nach Süden höher), Tausend Nadeln (Schimmernde Ebenen: Norden Lvl 30-32, Süden Lvl 33-35)" },
+      { 225, 280, "Feralas",            "Guide nennt hier keine Zonen; bisheriger Richtwert: Feral-Scar-Tal in Feralas (Yetis Lvl 43-46, ab Camp Mojache). Einige Mobs brauchen über 300 Kürschnerei" },
       { 280, 301, "Krater von Un'Goro",            "Krater von Un'Goro (Westen), Flug ab Marshals Zuflucht (Lvl 50-55)" },
     },
     hints = {
@@ -52,6 +54,7 @@ ns.defs = {
       { 50,  75,  "Geselle: Skill 50 beim Lehrer in der Hauptstadt." },
       { 125, 150, "Experte: Skill 125." },
       { 200, 225, "Artisan: Skill 200." },
+      { 225, 300, "Ab 225 nennt der Wowhead-Guide (7.11., Patch 1.60.1) keine Zonen. Das Rezept der Trapper's Workbench braucht Skill 300." },
       { 20,  300, "Mobs ab Lvl 20 brauchen Skill = 5 x Mob-Level. Handschuhe mit Kürschnerei-Verzauberung erlauben ein Level mehr." },
     },
   },
@@ -69,6 +72,7 @@ ns.defs = {
     hints = {
       { 1,   50,  "Lerne beim Lehrer das Basis-Lagerfeuer-Set. Gewürze und Wasser dort beim Händler kaufen, nicht im AH." },
       { 50,  75,  "Geselle beim selben Lehrer lernen, sonst gibt es ab 75 keine Skillpunkte." },
+      { 75,  140, "Hotfix 10.11.: Das Lagerfeuer des Gesellen (Journeyman Campfire Kit) lässt sich jetzt ab Kochen 90 aufstellen (vorher 140)." },
       { 125, 150, "Expertenkochbuch: Wulan (Desolace, Horde) oder Shandrina (Eschental, Allianz)." },
       { 225, 300, "Artisan (Skill 225, Lvl 35): Quest 'Clamlette Surprise', führt zu Dirge Quikcleave in Gadgetzan. Vorher 12 Riesenei, 10 Scharfes Muschelfleisch, 20 Alteraclochkäse besorgen." },
       { 225, 300, "In Gadgetzan beim Artisan-Lehrer und bei Gikkix alle Rezepte kaufen. Dieser Abschnitt ist in der Beta ungetestet." },
@@ -119,11 +123,12 @@ ns.defs = {
       { 1,   75,  "Rauer & Grober Stein",     "Wetz- und Schleifsteine; Steine abbauen (Bergbau passt perfekt), Schmiedehammer kaufen" },
       { 75,  150, "Kupfer- & Bronzebarren",    "Kupfer-, Bronzebarren, Schwerer Stein, Mittleres Leder; Flussmittel beim Händler" },
       { 150, 215, "Bronze, Eisen, Stahl, Mithril", "Grüner Farbstoff beim Händler; Stahl ab Bergbau 165; wenn Mithril teuer ist: Stahl-Brustplatte" },
-      { 215, 240, "Mithrilbarren",            "Schwere Mithril-Brustplatte 215-225 (160 Barren), Dichter Wetzstein 225-230, Schwere Mithril-Stiefel bis 240 (224 Barren, 64 Dickes Leder)" },
+      { 215, 240, "Mithrilbarren",            "Schwere Mithril-Brustplatte 215-225 (160 Barren), Verdichteter Wetzstein 225-230, Schwere Mithril-Stiefel bis 240 (224 Barren, 64 Dickes Leder)" },
       { 240, 301, "Thoriumbarren",            "Wowhead (4.11.): Ebon Shiv 257-270 (Magnus Frostwake), Bold Dirk 270-275, Ornate Thorium Handaxe 275-279, Bold Dirk 279-300 (720 Thoriumbarren, 96 Wesen der Luft, 240 Azerothium). Alternative (wow-professions): Kaiserlicher Plattengürtel 240-245, Armschienen 245-270, Stiefel 270-290, Beinschienen 290-300 (Quests evtl. erst ab 265). Beides ungetestet" },
     },
     hints = {
       { 1,   75,  "Schmiedehammer kaufen, er wird ab Skill 67 gebraucht." },
+      { 50,  90,  "Hotfix 10.11.: Grober Schleifstein gibt jetzt bis Skill 90 Skillpunkte (vorher 75)." },
       { 50,  75,  "Geselle: Skill 50, Lvl 10, Lehrer in den Hauptstädten." },
       { 125, 150, "Experte: Skill 125, Lvl 20, 50 Silber (Orgrimmar oder Eisenschmiede)." },
       { 200, 225, "Artisan: Skill 200, Lvl 35, Brikk Keencraft in Booty Bay." },

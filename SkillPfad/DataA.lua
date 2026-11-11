@@ -9,7 +9,7 @@ ns.allySubs = {
   { "z.B. Una in Donnerfels", "z.B. Simon Tanner in Sturmwind" },
   { "Hahrana Ironhide (Camp Mojache, Feralas)", "Telonis (Darnassus)" },
   { "Gesprenkelte Eber im Tal der Prüfungen / Durotar (Mob-Lvl 1-2)", "Wölfe im Wald von Elwynn / Dun Morogh (Mob-Lvl 1-3)" },
-  { "Raptorenlager westlich von Nordwacht (Lvl 16-18); Alternative: Loch Modan 75-125", "Loch Modan und Westfall (Lvl 15-20); Alternative 75-125" },
+  { "Brachland nahe Kreuzweg beginnen (Mob-Level steigen nach Süden), Loch Modan im Westen bei Thelsamar beginnen, Alternative: Dunkelküste", "Loch Modan im Westen bei Thelsamar beginnen, Westfall (Lvl 15-20), Alternative: Dunkelküste" },
   { "Brachland / Loch Modan", "Loch Modan / Westfall" },
   { "ab Tarrens Mühle", "ab Süderstade" },
   { "ab Camp Mojache", "ab Mondfederfeste" },
