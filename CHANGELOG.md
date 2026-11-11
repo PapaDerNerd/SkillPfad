@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.11.5
+- Hotfixes vom 10.11.: Hinweis Schmiedekunst (Grober Schleifstein gibt bis Skill 90 Punkte, vorher 75) und Kochen (Lagerfeuer des Gesellen ab Kochen 90, vorher 140).
+- Deutsche Itemnamen korrigiert: Raue/Grobe/Schwere Schleifsteine (statt "Mahlsteine"), Verdichteter Wetzstein, Verdichteter Gewichtsstein.
+- Englische Übersetzung für die neuen Kürschnerei-Zonen und Hinweise aus 1.11.4 ergänzt.
+- Hotfixes of 10 Nov: notes for Blacksmithing (Coarse Grinding Stone gives skill-ups to 90, was 75) and Cooking (Journeyman Campfire Kit from Cooking 90, was 140).
+- German item names corrected (grinding stones, Dense Sharpening Stone, Dense Weightstone).
+- English translation added for the new skinning zones and notes from 1.11.4.
+
+## 1.11.4
+- Kürschnerei nach Wowhead-Stand 7.11. (Patch 1.60.1): Zonen 75-125 Brachland/Loch Modan/Dunkelküste, 125-175 Eschental/Dämmerwald/Hügelland/Sumpfland, 175-225 Arathihochland/Schlingendorntal/Tausend Nadeln. Ab 225 nennt der Guide keine Zonen (bisherige Richtwerte bleiben, Hinweis ergänzt).
+- Lederverarbeitung: Hinweis zum Hotfix vom 6.11. (Gerberrahmen: Skillanforderung 140 auf 125, Skillpunkte dort um 15 reduziert).
+- Skinning per Wowhead (7 Nov, patch 1.60.1): zones 75-125 Barrens/Loch Modan/Darkshore, 125-175 Ashenvale/Duskwood/Hillsbrad/Wetlands, 175-225 Arathi/STV/Thousand Needles. No zones listed above 225 (old estimates kept, note added).
+- Leatherworking: note on the 6 Nov hotfix (Tanning Rack skill requirement 140 to 125, skill-ups there reduced by 15).
+
 ## 1.11.3
 - Fenster lässt sich jetzt auch im Kampf öffnen, schließen und verschieben (der Knopf "Beruf öffnen" hängt nicht mehr am Fenster und wird im Kampf ausgeblendet).
 - Beutelmengen aktualisieren sich auch bei geschlossenem Berufsfenster; Umschalten der Sortierung wirkt sofort auf die gespeicherte Rezeptliste.
