@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.6
+- Händlergunst (neue Währung in WoW Forever) als Tipps eingebaut: Lederverarbeitung (Kisten mit Gegerbten Häuten, 81 Muster beim Lederhändler im Lager), Kürschnerei (Leder für Abgefangene Kisten), Kochen (6 Smoothie-Rezepte). Die Muster gehören nicht zum Skillweg.
+- Neuer Wegpunkt `/sp weg gunst`: Lager Versorgung und Logistik Durotar (Brachland, Dokimi) bzw. Handelskommission von Azeroth (Rotkammgebirge, Marcy Baker), Koordinaten aus QuestieDB.
+- Merchant's Favor (new WoW Forever currency) added as tips: Leatherworking (crates with cured hides, 81 patterns at the camp vendor), Skinning (leather for Waylaid Crates), Cooking (6 smoothie recipes). The patterns are not part of the leveling path.
+- New waypoint `/sp weg gunst`: Durotar Supply and Logistics camp (Barrens, Dokimi) or Azeroth Commerce Authority camp (Redridge, Marcy Baker), coordinates from QuestieDB.
+
 ## 1.11.5
 - Hotfixes vom 10.11.: Hinweis Schmiedekunst (Grober Schleifstein gibt bis Skill 90 Punkte, vorher 75) und Kochen (Lagerfeuer des Gesellen ab Kochen 90, vorher 140).
 - Deutsche Itemnamen korrigiert: Raue/Grobe/Schwere Schleifsteine (statt "Mahlsteine"), Verdichteter Wetzstein, Verdichteter Gewichtsstein.
