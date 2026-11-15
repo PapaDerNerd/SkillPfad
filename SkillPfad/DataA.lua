@@ -45,6 +45,11 @@ ns.allySubs = {
   { "Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi)", "Lager Handelskommission von Azeroth bei Drei Ecken (Rotkammgebirge, Marcy Baker)" },
   { "Händlergunst-Lager (Pawani)", "Händlergunst-Lager (Daniel Stitchsong)" },
   { "Händlergunst-Lager (Aza'bek)", "Händlergunst-Lager (Kalsey Sanden)" },
+  { "Händlergunst-Lager (Apothekerin Durelle)", "Händlergunst-Lager (Nina Surefire)" },
+  { "Händlergunst-Lager (Gor'mak)", "Händlergunst-Lager (Stondry Darkhammer)" },
+  { "Händlergunst-Lager (Fizzlefuse)", "Händlergunst-Lager (Fritz Fizzle)" },
+  { "Händlergunst-Lager (Jum'bek)", "Händlergunst-Lager (Mivin Shadowweave)" },
+  { "Händlergunst-Lager (Beneris)", "Händlergunst-Lager (Alynsia)" },
 }
 
 local function sub(s)

@@ -37,6 +37,7 @@ ns.defs = {
       { 1,   300, "Händlergunst: Abgefangene Kisten (Beute von Monstern, seit 13.11. auch in Dungeons, oder AH) mit Material füllen und im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi) abgeben, /sp weg gunst. 2 Gegerbte Leichte/Mittlere/Schwere Häute bringen in der Stoffe-Kiste 10/20/30 Gunst." },
       { 60,  300, "Der Lederhändler im Händlergunst-Lager (Pawani) verkauft 81 Muster (ab Skill 60, 30-90 Gunst, höhere laut Guides zusätzlich mit Ruf). Der Wowhead-Skillweg nutzt sie nicht." },
       { 225, 300, "Ab 225 laut Guide ungetestet. Muster: Boshafte Lederstulpen (Werg Thickblade, Tirisfal) ab 235, Runenlederstirnband (Jase Farlane, Lichtgrenze) ab 265." },
+      { 300, 300, "Mit Skill 300 verkauft der Lagerhändler das Berufszertifikat (accountweiter Titel) für 1.000 Händlergunst." },
     },
   },
   skin = {
@@ -100,6 +101,7 @@ ns.defs = {
       { 125, 150, "Experte: Buch 'Under Wraps' bei Balai Lok'Wein (Düstermarschen, Horde). Dort gibt es auch die Handbücher für schwere Seide und Magiestoff." },
       { 225, 240, "Artisan (Skill 225, Lvl 35): Quest 'Triage' bei Doctor Gregory Victor (Hammerfall, Arathihochland). 15 Patienten retten, dann sofort abgeben." },
       { 225, 300, "Die Heiltrank-Rezepte (Überragend, Mächtig) haben keinen Händler und sind wohl Drops. Dieser Abschnitt ist in der Beta ungetestet." },
+      { 1, 300, "Händlergunst: Im Lager gibt es keine Erste-Hilfe-Rezepte. Überzähliger Stoff passt in Abgefangene Kisten (Textilien): Leinenstoff (40) = 5 Gunst, Wollstoff oder Seidenstoff (40) = 10, Magiestoff (40) = 15. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi), /sp weg gunst." },
     },
   },
   alchemie = {
@@ -118,6 +120,8 @@ ns.defs = {
       { 125, 150, "Experte: Skill 125, Lvl 20, Lehrer in Undercity." },
       { 200, 225, "Artisan: Skill 200, Lvl 35, Lehrer in Stonard (Sümpfe des Elends)." },
       { 225, 300, "Ab 225 ungetestet. Rezepte ab etwa 270 kommen aus dem AH oder gegen Zandalar-Ruf." },
+      { 65, 300, "Händlergunst: Der Alchimiehändler im Händlergunst-Lager (Apothekerin Durelle) verkauft 28 Rezepte (10 Tränke, 18 Elixiere; ab Skill 65, 45-240 Gunst, höhere zusätzlich mit Ruf). Ob sie Skillpunkte bringen, sagen die Guides nicht. /sp weg gunst" },
+      { 300, 300, "Mit Skill 300 verkauft der Lagerhändler das Berufszertifikat (accountweiter Titel) für 1.000 Händlergunst." },
     },
   },
   schmied = {
@@ -137,6 +141,9 @@ ns.defs = {
       { 125, 150, "Experte: Skill 125, Lvl 20, 50 Silber (Orgrimmar oder Eisenschmiede)." },
       { 200, 225, "Artisan: Skill 200, Lvl 35, Brikk Keencraft in Booty Bay." },
       { 225, 300, "Ab 225 laut Guide ungetestet (Quest für 240-245 evtl. anders als in Classic). Classic-Schwellen gelten nicht." },
+      { 1, 300, "Händlergunst: Barren aus dem Skillweg passen in Abgefangene Kisten (Barren): Kupferbarren oder Zinnbarren (20) oder Bronzebarren (10) = 10 Gunst; Silberbarren (10) oder Eisenbarren (20) = 20; Mithrilbarren (20), Stahlbarren (15) oder Goldbarren (10) = 30. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi)." },
+      { 45, 300, "Händlergunst: Der Schmiedehändler im Händlergunst-Lager (Gor'mak) verkauft 61 Pläne (Rüstungssätze und 3 Waffen; ab Skill 45, 30-120 Gunst, höhere zusätzlich mit Ruf). Ob sie Skillpunkte bringen, sagen die Guides nicht. /sp weg gunst" },
+      { 300, 300, "Mit Skill 300 verkauft der Lagerhändler das Berufszertifikat (accountweiter Titel) für 1.000 Händlergunst." },
     },
   },
   ingenieur = {
@@ -154,6 +161,9 @@ ns.defs = {
       { 125, 150, "Experte: Skill 125, Lvl 20, 50 Silber, Roxxik in Orgrimmar." },
       { 200, 225, "Artisan: Skill 200, Lvl 35, Buzzek Bracketswing in Tanaris. Spezialisierung (Gnom/Goblin) ab Skill 200 und Lvl 30." },
       { 225, 300, "Ab 225 ungetestet. Schema für Thoriumrohre gibt es in Everlook (Winterquell), bindet beim Aufheben." },
+      { 1, 300, "Händlergunst: Bauteile aus dem Skillweg passen in Abgefangene Kisten (Bauteile): Kupferbolzen (16), Kupferrohr (16) oder Kupfermodulator (4) = 10 Gunst; Bronzeröhre (8), Surrendes bronzenes Dingsda (7) oder Bronzegerüst (4) = 20; Eisenstrebe (8), Mithrilrohr (5), Instabiler Auslöser (12) oder Mithrilgehäuse (5) = 30. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi)." },
+      { 25, 300, "Händlergunst: Der Ingenieurshändler im Händlergunst-Lager (Fizzlefuse) verkauft 26 Baupläne (Bomben, Brillen, Bauteile; ab Skill 25, 45-360 Gunst, höhere zusätzlich mit Ruf). Ob sie Skillpunkte bringen, sagen die Guides nicht. /sp weg gunst" },
+      { 300, 300, "Mit Skill 300 verkauft der Lagerhändler das Berufszertifikat (accountweiter Titel) für 1.000 Händlergunst." },
     },
   },
   schneider = {
@@ -172,6 +182,9 @@ ns.defs = {
       { 200, 225, "Artisan: Skill 200, Lvl 35, Daryl Stack in Tarrens Mühle." },
       { 140, 225, "Magiestoff ist selten: Ballen im AH kaufen. Handschuhe der Meditation brauchen ein Elixier der Weisheit." },
       { 225, 300, "Classic-Routen taugen nicht: Rezepte werden 25-45 Punkte früher grau." },
+      { 1, 300, "Händlergunst: Stoffballen aus dem Skillweg passen in Abgefangene Kisten (Stoffe): Leinenstoffballen (20) = 10 Gunst; Wollstoffballen (6) oder Seidenstoffballen (10) = 20; Magiestoffballen (8) = 30. Roher Stoff geht in die Textilien-Kiste: Leinenstoff (40) = 5, Wollstoff oder Seidenstoff (40) = 10, Magiestoff (40) = 15. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi)." },
+      { 60, 300, "Händlergunst: Der Schneiderhändler im Händlergunst-Lager (Jum'bek) verkauft 67 Muster (Stoffsätze und 2 Taschen; Skill 60-235, 30-90 Gunst, höhere zusätzlich mit Ruf). Ob sie Skillpunkte bringen, sagen die Guides nicht. /sp weg gunst" },
+      { 300, 300, "Mit Skill 300 verkauft der Lagerhändler das Berufszertifikat (accountweiter Titel) für 1.000 Händlergunst." },
     },
   },
   verzauber = {
@@ -189,6 +202,9 @@ ns.defs = {
       { 50,  75,  "Geselle: Skill 50, Lvl 10, z.B. Godan in Orgrimmar." },
       { 125, 150, "Experte: Skill 125, Lvl 20, 50 Silber, Hgarth (Steinkrallengebirge, Horde)." },
       { 200, 225, "Artisan: Skill 200, Lvl 35, nur Annora in Uldaman (am besten mit Gruppe)." },
+      { 1, 300, "Händlergunst: Abgefangene Kisten (Kuriositäten): Seltsamer Staub (20), Große Magieessenz (4), Kleiner gleißender Splitter (6) oder Großer gleißender Splitter (2) = 5 Gunst; Seelenstaub (20) oder Große Astralessenz (4) = 10; Visionenstaub (20) oder Große Mystikeressenz (4) = 15. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi)." },
+      { 130, 300, "Händlergunst: Der Verzauberkunsthändler im Händlergunst-Lager (Beneris) verkauft 39 Formeln (ab Skill 130, 45-240 Gunst, höhere zusätzlich mit Ruf). Ob sie Skillpunkte bringen, sagen die Guides nicht. /sp weg gunst" },
+      { 300, 300, "Mit Skill 300 verkauft der Lagerhändler das Berufszertifikat (accountweiter Titel) für 1.000 Händlergunst." },
     },
   },
   bergbau = {
@@ -210,6 +226,7 @@ ns.defs = {
       { 125, 150, "Experte: Skill 125." },
       { 155, 175, "Gold schmelzen kannst du ab Skill 155 lernen." },
       { 200, 225, "Artisan: Skill 200, vor der Weiterreise lernen." },
+      { 1, 300, "Händlergunst: Abgefangene Kisten (Erz): Kupfererz oder Zinnerz (20) = 5 Gunst; Silbererz (10) oder Eisenerz (20) = 10; Golderz (10) oder Mithrilerz (20) = 15. Geschmolzene Barren bringen in der Barren-Kiste 10/20/30 Gunst. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi), /sp weg gunst." },
     },
   },
   kraeuter = {
@@ -232,6 +249,7 @@ ns.defs = {
       { 125, 150, "Experte: Skill 125." },
       { 200, 225, "Artisan: Skill 200. Vor Tanaris oder der Sengenden Schlucht lernen, dort gibt es keinen Lehrer." },
       { 170, 300, "Die Route ab 170 ist in der Beta nicht geprüft." },
+      { 1, 300, "Händlergunst: Abgefangene Kisten (Kräuter): Friedensblume oder Silberblatt (20), Erdwurzel, Maguskönigskraut oder Wilddornrose (10) = 5 Gunst; Würgetang, Beulengras, Wildstahlblume, Grabmoos oder Königsblut (10) = 10; Lebenswurz (20), Blassblatt, Golddorn oder Khadgars Schnurrbart (10) = 15; Winterbiss, Feuerblüte oder Arthas' Tränen (10) bzw. Lila Lotus (20) = 15. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi), /sp weg gunst." },
     },
   },
   angeln = {
