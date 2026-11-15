@@ -122,6 +122,7 @@ ns.locA = {
 }
 
 ns.trainerA = {
+  ["Händlergunst-Lager"] = { 1433, 9.7, 70.9, "Marcy Baker, Händlergunst-Lager (Rotkammgebirge)" },
   ["Ainethil"] = { 1457, 54.9, 24.0, "Ainethil (Darnassus)" },
   ["Arnold Leland"] = { 1453, 55.0, 69.7, "Arnold Leland (Sturmwind)" },
   ["Bengus Deepforge"] = { 1455, 52.5, 41.5, "Bengus Deepforge (Eisenschmiede)" },

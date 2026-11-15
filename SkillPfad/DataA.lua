@@ -42,6 +42,9 @@ ns.allySubs = {
   { "Lehrer: Mishiki in Sen'jin; Zor'la im Tal der Prüfungen nur bis 75, danach Jandi in Orgrimmar.", "Lehrer: Shylamiir in Sturmwind (Starterlehrer nur bis 75)." },
   { "Durotar, Mulgore, Tirisfal oder Zephras", "Elwynn, Dun Morogh, Teldrassil oder Zephras" },
   { "Brachland, Silberwald oder Hauptstädte", "Westfall, Loch Modan, Dunkelküste oder Hauptstädte" },
+  { "Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi)", "Lager Handelskommission von Azeroth bei Drei Ecken (Rotkammgebirge, Marcy Baker)" },
+  { "Händlergunst-Lager (Pawani)", "Händlergunst-Lager (Daniel Stitchsong)" },
+  { "Händlergunst-Lager (Aza'bek)", "Händlergunst-Lager (Kalsey Sanden)" },
 }
 
 local function sub(s)

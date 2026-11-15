@@ -241,6 +241,7 @@ ns.locName = {
 
 -- Berufslehrer: Name (englisch) -> { uiMapID, x, y, Beschriftung }
 ns.trainer = {
+  ["Händlergunst-Lager"] = { 1413, 50.1, 29.4, "Dokimi, Händlergunst-Lager (Brachland)" },
   ["Karolek"] = { 1454, 62.8, 44.1, "Karolek (Orgrimmar)" },
   ["Una"] = { 1456, 41.5, 42.6, "Una (Donnerfels)" },
   ["Hahrana Ironhide"] = { 1444, 74.4, 43.1, "Hahrana Ironhide (Feralas)" },

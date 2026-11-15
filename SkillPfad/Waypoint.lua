@@ -192,7 +192,7 @@ end
 function ns.WegCommand(arg)
   arg = (arg or ""):match("^%s*(.-)%s*$")
   if arg == "" then
-    say("Benutzung: /sp weg <Material oder Lehrer>   z.B. /sp weg grober faden   oder   /sp weg karolek")
+    say("Benutzung: /sp weg <Material oder Lehrer>   z.B. /sp weg grober faden   oder   /sp weg karolek   oder   /sp weg gunst")
     say("Mit /sp weg aus löschst du die Wegpunkte wieder.")
     return
   end
