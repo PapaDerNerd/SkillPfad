@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.7
+- Händlergunst für alle Berufe: Alchimie, Schmiedekunst, Ingenieurskunst, Schneiderei und Verzauberkunst zeigen den Lagerhändler (Rezeptzahl, ab welchem Skill, Gunstpreise) und welche Materialien aus dem Skillweg in die Abgefangenen Kisten passen. Bergbau, Kräuterkunde und Erste Hilfe zeigen die passenden Kisten. Ab Skill 300 Hinweis auf das Berufszertifikat (Titel, 1.000 Gunst).
+- Merchant's Favor for all professions: Alchemy, Blacksmithing, Engineering, Tailoring and Enchanting show the camp vendor (recipe count, minimum skill, favor cost) and which leveling materials fit the Waylaid Crates. Mining, Herbalism and First Aid show the matching crates. At skill 300 a note on the profession certification (title, 1,000 favor).
+
 ## 1.11.6
 - Händlergunst (neue Währung in WoW Forever) als Tipps eingebaut: Lederverarbeitung (Kisten mit Gegerbten Häuten, 81 Muster beim Lederhändler im Lager), Kürschnerei (Leder für Abgefangene Kisten), Kochen (6 Smoothie-Rezepte). Die Muster gehören nicht zum Skillweg.
 - Neuer Wegpunkt `/sp weg gunst`: Lager Versorgung und Logistik Durotar (Brachland, Dokimi) bzw. Handelskommission von Azeroth (Rotkammgebirge, Marcy Baker), Koordinaten aus QuestieDB.
