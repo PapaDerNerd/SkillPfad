@@ -257,15 +257,16 @@ ns.defs = {
     gather = true,
     names = { ["Fishing"] = true, ["Angeln"] = true },
     phases = {
-      { 1,   75,  "Starterzonen",   "Durotar, Mulgore, Tirisfal oder Zephras; Angel und Glitzerköder beim Händler" },
+      { 1,   75,  "Starterzonen",   "Durotar, Mulgore, Tirisfal oder Zephras; Angel und Glänzende Schmuckstücke (Köder) beim Händler" },
       { 75,  150, "Geselle",        "Brachland, Silberwald oder Hauptstädte; Nachtkriecher helfen ab Skill 50, wenn Fische entkommen" },
-      { 150, 225, "Experte",        "Düstermarschen (empfohlen), Tausend Nadeln, Schlingendorntal; Helle Köder in Booty Bay kaufen" },
-      { 225, 301, "Artisan",        "Teufelswald, Feralas, Hinterland, Tanaris, Krater von Un'Goro, Westliche Pestländer; Helle Köder verwenden" },
+      { 150, 225, "Experte",        "Düstermarschen (empfohlen), Tausend Nadeln, Schlingendorntal; Helle Schmuckstücke (Köder) in Booty Bay kaufen" },
+      { 225, 301, "Artisan",        "Teufelswald, Feralas, Hinterland, Tanaris, Krater von Un'Goro, Westliche Pestländer; Helle Schmuckstücke (Köder) verwenden" },
     },
     hints = {
       { 50,  75,  "Geselle: Skill 50, Lvl 10 beim Lehrer." },
       { 125, 150, "Experte: Skill 125, Lvl 20. Das Buch verkauft Old Man Heming in Booty Bay (oder AH)." },
       { 200, 225, "Artisan (ab 225 nötig): Lvl 35, Quest 'Nat Pagle, Angler Extreme' in den Düstermarschen: 4 Fische aus Feralas, Sümpfe des Elends, Desolace und Schlingendorntal." },
+      { 140, 300, "Angelgestell (Lager, ab Angeln 140): Bauplan von Gelihast (Tiefschwarze Grotte); Material 2 Einfaches Holz, 1 Kristallphiole, 2 Rohe Mithrilkopfforelle; ein Lagerfeuer muss in der Nähe sein. Eine Stunde lang beißen ungewöhnliche (aufgeblähte) Fische. Seit Hotfix 16.11. gibt es die Köder des Gestells für alle, und aufgeblähte Fische kommen häufiger." },
     },
   },
 }
