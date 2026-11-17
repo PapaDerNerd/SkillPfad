@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.8
+- Angeln: Tipp zum Angelgestell (Lager, ab Angeln 140): Bauplan von Gelihast, Material, Wirkung und der Hotfix vom 16.11. (Köder für alle, mehr aufgeblähte Fische).
+- Angeln: Ködernamen wie im Spiel (Glänzende Schmuckstücke, Helle Schmuckstücke) statt "Glitzerköder"/"Helle Köder".
+- Fishing: tip on the Fishing Rack (camp, from Fishing 140): blueprint from Gelihast, materials, effect and the 16 Nov hotfix (lures for everyone, more bloated fish).
+- Fishing: German lure names now match the game client.
+
 ## 1.11.7
 - Händlergunst für alle Berufe: Alchimie, Schmiedekunst, Ingenieurskunst, Schneiderei und Verzauberkunst zeigen den Lagerhändler (Rezeptzahl, ab welchem Skill, Gunstpreise) und welche Materialien aus dem Skillweg in die Abgefangenen Kisten passen. Bergbau, Kräuterkunde und Erste Hilfe zeigen die passenden Kisten. Ab Skill 300 Hinweis auf das Berufszertifikat (Titel, 1.000 Gunst).
 - Merchant's Favor for all professions: Alchemy, Blacksmithing, Engineering, Tailoring and Enchanting show the camp vendor (recipe count, minimum skill, favor cost) and which leveling materials fit the Waylaid Crates. Mining, Herbalism and First Aid show the matching crates. At skill 300 a note on the profession certification (title, 1,000 favor).
