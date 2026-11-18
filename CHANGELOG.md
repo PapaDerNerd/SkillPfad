@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.9
+- Berufsquests mit der aktuellen QuestieDB (1.1.3) abgeglichen: neue Bergbau-Quest "Material für die Schmiede" (Allianz, Loch Modan, 10 Bronzebarren); Schmiede-Quests "Nachschub für die Front" ab Skill 25 (vorher 30) und "Die Aufrüstung im Rotkammgebirge" ab Skill 35 (vorher 60).
+- Schmiedekunst: "Die alten Traditionen" gibt laut Hotfix vom 17.11. das Rezept Orc-Kriegsgamaschen als Gegenstand; Ersatz bei Sumi.
+- Profession quests checked against QuestieDB 1.1.3: new Mining quest "Ingredients for the Forge" (Alliance, Loch Modan, 10 Bronze Bars); Blacksmithing quests "Supplying the Front" from skill 25 (was 30) and "Gearing Redridge" from skill 35 (was 60).
+- Blacksmithing: per the 17 Nov hotfix "The Old Ways" grants the Orcish War Leggings recipe as an item; replacement from Sumi.
+
 ## 1.11.8
 - Angeln: Tipp zum Angelgestell (Lager, ab Angeln 140): Bauplan von Gelihast, Material, Wirkung und der Hotfix vom 16.11. (Köder für alle, mehr aufgeblähte Fische).
 - Angeln: Ködernamen wie im Spiel (Glänzende Schmuckstücke, Helle Schmuckstücke) statt "Glitzerköder"/"Helle Köder".
