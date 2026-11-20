@@ -249,6 +249,8 @@ ns.defs = {
       { 125, 150, "Experte: Skill 125." },
       { 200, 225, "Artisan: Skill 200. Vor Tanaris oder der Sengenden Schlucht lernen, dort gibt es keinen Lehrer." },
       { 170, 300, "Die Route ab 170 ist in der Beta nicht geprüft." },
+      { 1, 300, "Kräutersamen (Gewöhnliche, Ungewöhnliche, Auffällige, Rare) fallen beim Sammeln: aufheben, sie passen in Kräutertaschen. Pflanzen im Gewächshaus (ab Skill 140, Bauplan nötig) am Lagerfeuer, vermehren ab Skill 300 im Saatenkreuzer." },
+      { 300, 300, "Saatenkreuzer (Samenhybridisierer): Bauplan: Saatenkreuzer nötig, Fundort laut Guides noch unbekannt. Material: 4 Bergsilberweisling, 1 Kristallphiole, 2 Runenstoff. Neben ein Lagerfeuer stellen und 2 Samen derselben Stufe einlegen: vermehrt sie oder ergibt eine seltenere Stufe, wirkt zusätzlich wie die Räucherkerze. Seit Hotfix 19.11. mit Fehlschlagchance, Rare Kräutersamen gehen nicht mehr hinein." },
       { 1, 300, "Händlergunst: Abgefangene Kisten (Kräuter): Friedensblume oder Silberblatt (20), Erdwurzel, Maguskönigskraut oder Wilddornrose (10) = 5 Gunst; Würgetang, Beulengras, Wildstahlblume, Grabmoos oder Königsblut (10) = 10; Lebenswurz (20), Blassblatt, Golddorn oder Khadgars Schnurrbart (10) = 15; Winterbiss, Feuerblüte oder Arthas' Tränen (10) bzw. Lila Lotus (20) = 15. Abgabe im Lager Versorgung und Logistik Durotar westlich von Kreuzweg (Brachland, Dokimi), /sp weg gunst." },
     },
   },
