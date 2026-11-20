@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.10
+- Kräuterkunde: Tipps zu Kräutersamen (vier Stufen, Gewächshaus ab Skill 140) und zum Saatenkreuzer (Samenhybridisierer, ab Skill 300): Material, Lagerfeuer, 2 Samen derselben Stufe, Hotfix vom 19.11. (Fehlschlagchance, keine Raren Kräutersamen mehr). Fundort des Bauplans laut Guides noch unbekannt.
+- Herbalism: tips on herb seeds (four tiers, Greenhouse from skill 140) and the Seed Hybridizer (from skill 300): materials, campfire, 2 seeds of the same tier, 19 Nov hotfix (failure chance, no Scarce Herb Seeds). Blueprint source still unknown according to guides.
+
 ## 1.11.9
 - Berufsquests mit der aktuellen QuestieDB (1.1.3) abgeglichen: neue Bergbau-Quest "Material für die Schmiede" (Allianz, Loch Modan, 10 Bronzebarren); Schmiede-Quests "Nachschub für die Front" ab Skill 25 (vorher 30) und "Die Aufrüstung im Rotkammgebirge" ab Skill 35 (vorher 60).
 - Schmiedekunst: "Die alten Traditionen" gibt laut Hotfix vom 17.11. das Rezept Orc-Kriegsgamaschen als Gegenstand; Ersatz bei Sumi.
