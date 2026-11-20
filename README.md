@@ -4,11 +4,11 @@
 
 **Berufs-Guide für WoW Forever (Classic-Regelwerk).** SkillPfad zeigt dir für alle 12 Berufe den besten Weg von 1 bis 300: welches Rezept du als Nächstes herstellst, welches Material du brauchst, wo du es bekommst, was es im Auktionshaus kostet – und setzt auf Wunsch TomTom-Wegpunkte.
 
-![Lederverarbeitung: Skill-Weg, Quests und beste Rezepte](docs/images/leder-guide.jpg)
+![Lederverarbeitung: "Jetzt", Alternativen und einklappbare Abschnitte](docs/images/leder-guide.jpg)
 
-| Einkaufsliste & Gesamtbedarf | Optionen (Berufe ein-/ausschalten) |
-|---|---|
-| ![Einkaufsliste](docs/images/einkaufsliste.jpg) | ![Optionen](docs/images/optionen.jpg) |
+| Planung & der ganze Weg | Optionen | Optik anpassen |
+|---|---|---|
+| ![Planung und Phasenbalken](docs/images/weg-planung.jpg) | ![Optionen](docs/images/optionen.jpg) | ![Optik anpassen](docs/images/optik.jpg) |
 
 ## Funktionen
 
@@ -19,6 +19,8 @@
 - **Berufsquests** mit Hinweis, wenn eine Entscheidung nicht rückgängig zu machen ist.
 - **Einkaufsliste mit Kosten** (Preise aus Auctionator oder eigenem Scan) und **Übergabe an Auctionator** als Einkaufsliste per Klick.
 - **Mehrere Routen** pro Beruf mit Kostenvergleich; **Paarungen** wie Bergbau ↔ Schmiedekunst, Kräuterkunde ↔ Alchemie, Angeln ↔ Kochen.
+- **Übersichtliches Fenster:** Karte „Jetzt“ mit dem besten Rezept, einklappbare Abschnitte (Tipps, Händlergunst, Quests, Einkaufsliste, Gesamtbedarf, der ganze Weg mit Phasenbalken).
+- **Anpassbar:** Fenstergröße per Ziehgriff, Schriftgröße, Zeilenabstand, Farbschema, Textfarbe und Deckkraft (Optionen → „Optik anpassen …“).
 - **Berufe ein-/ausschalten**, wenn du nicht alles skillst.
 - **Empfehlungen auch ohne offenes Berufsfenster** (letzter Stand) und Knopf „Beruf öffnen“.
 - **Deutsch und Englisch:** automatisch nach Client-Sprache, umschaltbar mit `/sp lang de|en|auto`.

@@ -4,11 +4,11 @@
 
 **Profession guide for WoW Forever (Classic ruleset).** For all 12 professions SkillPfad shows the best path from 1 to 300: which recipe to craft next, the materials needed, where to get them, their auction house price, and optionally sets TomTom waypoints. The UI is available in **English and German** (chosen by client language, switch with `/sp lang de|en|auto`).
 
-![Leatherworking: skill path, quests and best recipes](docs/images/leder-guide.jpg)
+![Leatherworking: "Now", alternatives and collapsible sections](docs/images/leder-guide.jpg)
 
-| Shopping list & total needs | Options (switch professions on/off) |
-|---|---|
-| ![Shopping list](docs/images/einkaufsliste.jpg) | ![Options](docs/images/optionen.jpg) |
+| Planning & the whole path | Options | Customize look |
+|---|---|---|
+| ![Planning and phase bar](docs/images/weg-planung.jpg) | ![Options](docs/images/optionen.jpg) | ![Customize look](docs/images/optik.jpg) |
 
 ## Features
 
@@ -18,6 +18,8 @@
 - TomTom waypoints for materials, trainers, vendors and profession quests (Blizzard waypoint as fallback).
 - Profession quests, with warnings before irreversible choices.
 - Shopping list with costs (Auctionator or own scan) and **one-click export to an Auctionator shopping list**.
+- **Clear window:** a "Now" card with the best recipe and collapsible sections (tips, Merchant's Favor, quests, shopping list, total needs, the whole path with a phase bar).
+- **Customizable:** window size via the resize grip, font size, line spacing, color scheme, text color and opacity (Options → "Customize look …").
 - Several routes per profession with cost comparison; gatherer/crafter pairings.
 - Recommendations stay visible without the profession window (last known state), plus an "open profession" button.
 - Switch professions on/off. Self-test with `/sp check`. Command overview with `/sp help` (slash keywords are German, e.g. `/sp leder`).
