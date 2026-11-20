@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.12.3
+- Fenster größer (860 x 660) und mit dem Griff unten rechts frei in der Größe veränderbar (760 x 600 bis 1600 x 1200); Größe wird gespeichert, die Karten passen sich der Breite an. "Fenster sperren" sperrt auch die Größe.
+- Optionen neu geordnet: links "Anzeige und Verhalten", "Fenster und Inhalt", "Route, Sprache und Preise", rechts "Berufe anzeigen" und "Optik" mit Status. Optik-Seite mit Vorschau rechts daneben.
+- "Fenstergröße" heißt jetzt "Skalierung"; "Fenster zurücksetzen" setzt Position und Größe zurück.
+- Larger window (860 x 660), freely resizable with the grip at the bottom right (760 x 600 to 1600 x 1200); size is saved and cards adapt to the width. "Lock window" also locks the size.
+- Options reorganized: left "Display and behavior", "Window and content", "Route, language and prices", right "Show professions" and "Look" with status. Look page with preview alongside.
+- "Window size" is now called "Scale"; "Reset window" resets position and size.
+
+## 1.12.2
+- Optionen → "Optik anpassen …": Schriftgröße (9-18), Zeilenabstand, Farbschema (Leder, Dunkel, Nachtblau, Wald), Textfarbe (Creme, Weiß, Hellgrau, Gold) und Hintergrund-Deckkraft, mit Vorschau und "Standard wiederherstellen". Die Schriftgröße gilt für Karten, Abschnittstitel und Seitenleiste.
+- Options → "Customize look …": font size (9-18), line spacing, color scheme (Leather, Dark, Midnight blue, Forest), text color (Cream, White, Light grey, Gold) and background opacity, with preview and "Restore defaults". The font size applies to cards, section titles and the sidebar.
+
+## 1.12.1
+- Layout näher am Entwurf: Alternativen eine Zeile pro Rezept (Materialien direkt dahinter), Fundorte fehlender Materialien nur noch einmal ("Fehlt: ..."), "Jetzt"-Karte mit Pfeil und goldenem Rahmen, Abschnitte mit farbigem Rahmen statt Seitenbalken, engere Zeilenabstände.
+- Skillbalken zeigt die aktuelle Obergrenze (z.B. 31 / 75) statt immer / 300.
+- Layout closer to the draft: alternatives on one line per recipe (materials right after), sources of missing materials shown only once ("Missing: ..."), "Now" card with arrow and gold border, sections with colored border instead of side bar, tighter line spacing.
+- Skill bar shows the current cap (e.g. 31 / 75) instead of always / 300.
+
+## 1.12.0
+- Neues, übersichtlicheres Fenster: Tipps, Händlergunst, Berufsquests, Einkaufsliste, Gesamtbedarf und "Der ganze Weg" sind einklappbare Abschnitte (Klick auf die Kopfzeile, mit Anzahl bzw. Kurzinfo). Der Zustand wird pro Beruf gespeichert; "Wichtig" und "Alternativen" sind anfangs offen.
+- Oben steht die Karte "Jetzt": bestes Rezept mit allen Materialien in einer Zeile (grün vorhanden, rot fehlend) und Fundort der fehlenden.
+- Kopfzeile zeigt die aktuelle Phase unter dem Berufsnamen; "Beruf öffnen" sitzt unter dem Skillbalken.
+- TomTom-Knöpfe stehen im passenden Abschnitt (Material in "Jetzt"/"Alternativen", Quests bei den Berufsquests, Lager bei Händlergunst, Auctionator-Listen beim Gesamtbedarf); übrige wie Lehrer unter "Wegpunkte (TomTom)".
+- "Der ganze Weg" jetzt auch in Herstellungsberufen, mit Phasenbalken (grün erledigt, gold aktuell).
+- New, clearer window: tips, Merchant's Favor, profession quests, shopping list, total needs and "The whole path" are collapsible sections (click the header, with count or short info). The state is saved per profession; "Important" and "Alternatives" start open.
+- A "Now" card at the top: best recipe with all materials on one line (green available, red missing) and where to get the missing ones.
+- The header shows the current phase below the profession name; "Open profession" sits below the skill bar.
+- TomTom buttons sit in the matching section (materials in "Now"/"Alternatives", quests under profession quests, camp under Merchant's Favor, Auctionator lists under total needs); the rest such as trainers under "Waypoints (TomTom)".
+- "The whole path" now also for crafting professions, with a phase bar (green done, gold current).
+
 ## 1.11.10
 - Kräuterkunde: Tipps zu Kräutersamen (vier Stufen, Gewächshaus ab Skill 140) und zum Saatenkreuzer (Samenhybridisierer, ab Skill 300): Material, Lagerfeuer, 2 Samen derselben Stufe, Hotfix vom 19.11. (Fehlschlagchance, keine Raren Kräutersamen mehr). Fundort des Bauplans laut Guides noch unbekannt.
 - Herbalism: tips on herb seeds (four tiers, Greenhouse from skill 140) and the Seed Hybridizer (from skill 300): materials, campfire, 2 seeds of the same tier, 19 Nov hotfix (failure chance, no Scarce Herb Seeds). Blueprint source still unknown according to guides.
