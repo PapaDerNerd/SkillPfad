@@ -123,6 +123,13 @@ ns.profTrainers = {
   angeln    = { {125, 224, "Old Man Heming", "Expertenbuch (Booty Bay)"}, {200, 300, "Nat Pagle", "Artisan-Quest"} },
 }
 
+-- Knopf zum Haendlergunst-Lager (nur, wenn der Abschnitt Haendlergunst angezeigt wird)
+function ns.GunstActions()
+  local loc = trainerLoc("Händlergunst-Lager")
+  if not loc then return {} end
+  return { { text = "Weg: Händlergunst-Lager", sec = "gunst", only = true, fn = function() ns.GoToLoc(loc) end } }
+end
+
 -- Buttons fuer Lehrer, passend zum Skill
 function ns.TrainerActions(key, rank)
   local out = {}
@@ -151,7 +158,7 @@ function ns.PhaseItemActions(key, phaseIndex)
   for _, id in ipairs((ns.phaseItems[key] or {})[phaseIndex] or {}) do
     if ns.LocFor(id) then
       local nm = ns.locName and ns.locName[id] or tostring(id)
-      out[#out + 1] = { text = ns.fmt("Weg: %s finden", nm), fn = function() ns.GoToItem(id) end }
+      out[#out + 1] = { text = ns.fmt("Weg: %s finden", nm), sec = "now", fn = function() ns.GoToItem(id) end }
     end
   end
   return out

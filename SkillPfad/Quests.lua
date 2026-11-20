@@ -155,10 +155,10 @@ end
 function ns.QuestLines(key, rank)
   local q = ns.quests and ns.quests[key]
   if not q then return {} end
-  local fac, L = myFaction(), {}
+  local fac, L, n = myFaction(), {}, nil
   for _, e in ipairs(q) do
     if relevant(e, rank, fac) then
-      if #L == 0 then L[1] = " "; L[2] = "|cffffd100Berufsquests:|r" end
+      if #L == 0 then L[1] = " "; L[2] = "##quest|Berufsquests|" end
       local mark = (e[6]:find("ENDGÜLTIG", 1, true) or e[6]:find("SCHLIESST", 1, true) or e[6]:find("endgültige", 1, true)) and " |cffff4040[endgültig]|r" or ""
       if rank >= e[1] then
         L[#L + 1] = ns.fmt("|cff00ff00%s|r%s (ab Skill %d) – %s, %s", e[3], mark, e[1], e[4], e[5])
@@ -167,8 +167,10 @@ function ns.QuestLines(key, rank)
         L[#L + 1] = ns.fmt("|cffffff00Bald: %s|r (ab Skill %d) – %s, %s", e[3], e[1], e[4], e[5])
         L[#L + 1] = "   |cff999999" .. e[6] .. "|r"
       end
+      n = (n or 0) + 1
     end
   end
+  if #L > 0 then L[2] = L[2] .. n end
   return L
 end
 
@@ -184,7 +186,7 @@ function ns.QuestActions(key, rank)
       if not seen[id] then
         seen[id] = true
         local loc = { e[7], e[8], e[9], e[4] .. " (" .. e[3] .. ")" }
-        out[#out + 1] = { text = ns.fmt("Quest: %s – %s", e[4], e[3]), fn = function() ns.GoToLoc(loc) end }
+        out[#out + 1] = { text = ns.fmt("Quest: %s – %s", e[4], e[3]), sec = "quest", fn = function() ns.GoToLoc(loc) end }
       end
     end
   end
@@ -215,9 +217,43 @@ function ns.WarnLines(key, rank)
   local L = {}
   for _, w in ipairs((ns.warnings and ns.warnings[key]) or {}) do
     if rank >= w[1] and rank <= w[2] then
-      if #L == 0 then L[1] = " "; L[2] = "|cffff4040Wichtig – Entscheidungen:|r" end
+      if #L == 0 then L[1] = " "; L[2] = "##warn|Wichtig – Entscheidungen|" end
       L[#L + 1] = "|cffff8040! " .. w[3] .. "|r"
     end
+  end
+  return L
+end
+
+-- Tipps und Haendlergunst als einklappbare Abschnitte
+function ns.TipSections(key, rank)
+  local tips, gunst = {}, {}
+  for _, h in ipairs((ns.defs[key] and ns.defs[key].hints) or {}) do
+    if rank >= h[1] and rank <= h[2] then
+      local t = h[3]:find("Gunst", 1, true) and gunst or tips
+      t[#t + 1] = "|cffd0c8b4- " .. h[3] .. "|r"
+    end
+  end
+  local L = {}
+  if #tips > 0 then
+    L[#L + 1] = " "; L[#L + 1] = "##tips|Tipps|" .. #tips
+    for _, t in ipairs(tips) do L[#L + 1] = t end
+  end
+  if #gunst > 0 then
+    L[#L + 1] = " "; L[#L + 1] = "##gunst|Händlergunst|" .. #gunst
+    for _, t in ipairs(gunst) do L[#L + 1] = t end
+  end
+  return L
+end
+
+-- Der ganze Weg (im Fenster mit Phasenbalken)
+function ns.PathSection(key, rank)
+  local def = ns.defs[key]
+  local L = { " ", "##weg|Der ganze Weg|" }
+  for _, p in ipairs(def.phases) do
+    local here = rank and rank >= p[1] and rank < p[2]
+    local mark = here and "|cff00ff00> " or "  "
+    L[#L + 1] = ns.fmt("%s%d-%d: %s|r", mark, p[1], math.min(p[2], 300), p[3])
+    L[#L + 1] = "      |cff999999" .. p[4] .. "|r"
   end
   return L
 end

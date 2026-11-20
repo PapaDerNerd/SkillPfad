@@ -169,11 +169,36 @@ end
 
 local pending, wantOpen = false, false
 
+-- Materialien eines Rezepts in einer Zeile (vorhanden grün, fehlend rot); fehlende mit Fundort in srcs (ohne Doppelte)
+local function matLine(r, srcs, seen)
+  local chips = {}
+  for _, m in ipairs(r.reag) do
+    local rn, rc, have = m[1], m[2], m[3]
+    local c = (have >= rc) and "|cff00ff00" or "|cffff4040"
+    chips[#chips + 1] = ns.fmt("%s%s: %d/%d|r", c, rn, have, rc)
+    if have < rc and not seen[rn] then
+      seen[rn] = true
+      local src = ns.SourceOf(m[4])
+      if src then srcs[#srcs + 1] = "|cff999999Fehlt: " .. rn .. " -> " .. src .. "|r" end
+    end
+  end
+  return table.concat(chips, "   ")
+end
+
+local function money(r, usePrice)
+  if not usePrice then return "" end
+  local note = (r.miss > 0) and " (ohne Händlerware)" or ""
+  return "  |cff999999~" .. (GetCoinTextureString or GetMoneyString or tostring)(math.floor(r.money)) .. note .. "|r"
+end
+
+local function colorOf(r) return (r.type == "optimal") and "|cffff8040" or "|cffffff00" end
+
 local function buildRaw(key, rank, maxRank, list, usePrice, cached)
   local def = ns.defs[key]
   local ph = ns.phaseFor(key, rank)
-  local L = {}
-  L[#L + 1] = ns.fmt("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
+  SkillPfadDB.maxRanks = SkillPfadDB.maxRanks or {}
+  SkillPfadDB.maxRanks[key] = maxRank
+  local L = { "##now|Jetzt|" }
   if cached then
     L[#L + 1] = "|cff999999Stand vom letzten Öffnen des Berufsfensters (Skill " .. cached.rank ..
       "). Menge im Beutel ist aktuell, Rezeptfarben evtl. nicht. Öffne das Berufsfenster zum Aktualisieren.|r"
@@ -181,50 +206,41 @@ local function buildRaw(key, rank, maxRank, list, usePrice, cached)
   if rank >= maxRank and maxRank < 300 then
     L[#L + 1] = "|cffff8040Maximum erreicht: Lerne beim Lehrer die nächste Stufe.|r"
   end
-  L[#L + 1] = ns.fmt("Aktuelle Phase: |cff00ff00%s|r", ph[3])
-  L[#L + 1] = "Material holen: " .. ph[4]
-  for _, h in ipairs(def.hints or {}) do
-    if rank >= h[1] and rank <= h[2] then
-      L[#L + 1] = "|cff999999Tipp: " .. h[3] .. "|r"
-    end
-  end
-  for _, wl in ipairs(ns.WarnLines(key, rank)) do L[#L + 1] = wl end
-  for _, ql in ipairs(ns.QuestLines(key, rank)) do L[#L + 1] = ql end
-  if usePrice then
-    L[#L + 1] = "Sortierung: |cffffd100AH-Preise|r"
-  elseif SkillPfadDB.price then
-    L[#L + 1] = "Sortierung: Farm-Aufwand (noch keine Preise, siehe Optionen)"
-  else
-    L[#L + 1] = "Sortierung: |cffffd100Farm-Aufwand|r"
-  end
-  L[#L + 1] = " "
+  local seen = {}
   if #list == 0 then
     L[#L + 1] = "Keine orangenen/gelben Rezepte gefunden."
+    L[#L + 1] = "|cff999999Material holen: " .. ph[4] .. "|r"
   else
-    L[#L + 1] = "|cffffd100Beste Rezepte zum Skillen:|r"
-    for k = 1, math.min(SkillPfadDB.topN or 3, #list) do
-      local r = list[k]
-      local col = (r.type == "optimal") and "|cffff8040" or "|cffffff00"
-      L[#L + 1] = ns.fmt("%d. %s%s|r  (Material für %dx)", k, col, r.name, r.crafts)
-      if usePrice then
-        local note = (r.miss > 0) and " (ohne Händlerware)" or ""
-        L[#L + 1] = "   Kosten/Herstellung: ~" .. (GetCoinTextureString or GetMoneyString or tostring)(math.floor(r.money)) .. note
-      end
-      for _, m in ipairs(r.reag) do
-        local rn, rc, have = m[1], m[2], m[3]
-        local c = (have >= rc) and "|cff00ff00" or "|cffff4040"
-        L[#L + 1] = ns.fmt("   %s%s: %d/%d|r", c, rn, have, rc)
-        local src = have < rc and ns.SourceOf(m[4])
-        if src then
-          L[#L + 1] = "      |cff999999-> " .. src .. "|r"
-        end
-      end
-    end
+    local r1, srcs = list[1], {}
+    L[#L + 1] = ns.fmt("%s%s|r herstellen", colorOf(r1), r1.name) ..
+      "  |cff999999" .. ns.fmt("(Material für %dx)", r1.crafts) .. "|r" .. money(r1, usePrice)
+    L[#L + 1] = matLine(r1, srcs, seen)
+    for _, sl in ipairs(srcs) do L[#L + 1] = sl end
   end
+  local sortTxt
+  if usePrice then sortTxt = "Sortierung: AH-Preise"
+  elseif SkillPfadDB.price then sortTxt = "Sortierung: Farm-Aufwand (noch keine Preise, siehe Optionen)"
+  else sortTxt = "Sortierung: Farm-Aufwand" end
+  local topN = math.min(SkillPfadDB.topN or 3, #list)
+  if #list > 0 and topN < 2 then L[#L + 1] = "|cff999999" .. sortTxt .. "|r" end
+  for _, wl in ipairs(ns.WarnLines(key, rank)) do L[#L + 1] = wl end
+  if topN >= 2 then
+    L[#L + 1] = " "
+    L[#L + 1] = "##alt|Alternativen|" .. sortTxt
+    local srcs = {}
+    for k = 2, topN do
+      local r = list[k]
+      L[#L + 1] = ns.fmt("%d. %s%s|r", k, colorOf(r), r.name) .. money(r, usePrice) .. "   " .. matLine(r, srcs, seen)
+    end
+    for _, sl in ipairs(srcs) do L[#L + 1] = sl end
+  end
+  for _, tl in ipairs(ns.TipSections(key, rank)) do L[#L + 1] = tl end
+  for _, ql in ipairs(ns.QuestLines(key, rank)) do L[#L + 1] = ql end
   if #list > 0 then
     for _, sl in ipairs(ns.ShoppingLines(list, rank, ph, maxRank, usePrice)) do L[#L + 1] = sl end
   end
   for _, pl in ipairs(ns.CraftPlanLines(key, rank)) do L[#L + 1] = pl end
+  for _, pl in ipairs(ns.PathSection(key, rank)) do L[#L + 1] = pl end
   ns.SetLines(key, L)
 
   local acts, seenId = {}, {}
@@ -233,13 +249,15 @@ local function buildRaw(key, rank, maxRank, list, usePrice, cached)
       local id = m[4]
       if id and m[3] < m[2] and ns.LocFor(id) and not seenId[id] and #acts < 6 then
         seenId[id] = true
-        acts[#acts + 1] = { text = ns.fmt("Weg: %s besorgen", m[1]), fn = function() ns.GoToItem(id) end }
+        acts[#acts + 1] = { text = ns.fmt("Weg: %s besorgen", m[1]), sec = (k == 1) and "now" or "alt",
+                            fn = function() ns.GoToItem(id) end }
       end
     end
   end
   for _, a in ipairs(ns.TrainerActions(key, rank)) do acts[#acts + 1] = a end
   for _, a in ipairs(ns.QuestActions(key, rank or 1)) do acts[#acts + 1] = a end
-  for _, a in ipairs(ns.ShoppingActions(key, rank, ph and ph[2])) do acts[#acts + 1] = a end
+  for _, a in ipairs(ns.ShoppingActions(key, rank, ph and ph[2])) do a.sec = "need"; acts[#acts + 1] = a end
+  for _, a in ipairs(ns.GunstActions()) do acts[#acts + 1] = a end
   ns.SetActions(key, acts)
   if not cached and wantOpen then
     wantOpen = false

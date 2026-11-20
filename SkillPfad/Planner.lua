@@ -257,7 +257,7 @@ function ns.GatherPlanLines(key, gatherRank)
     local cr = ns.RankOf and ns.RankOf(craft)
     local L, R = ns.PlanLines(craft, cr or 1, key, gatherRank)
     if R and #L > 0 then
-      if #out == 0 then out[1] = " "; out[2] = "|cffffd100Planung beider Berufe:|r" end
+      if #out == 0 then out[1] = " "; out[2] = "##plan|Planung beider Berufe|" end
       out[#out + 1] = ns.fmt("|cffffd100Für %s%s|r bis Skill 300 – Route: %s", def and def.label or craft,
         cr and (" (Skill " .. cr .. ")") or " (ab Skill 1)", R.name)
       out[#out + 1] = "|cff999999" .. R.note .. " Wechseln: /sp route " .. craft .. "|r"
@@ -276,7 +276,7 @@ end
 function ns.CraftPlanLines(craft, rank)
   local L, R = ns.PlanLines(craft, rank or 1, nil)
   if not R or #L == 0 then return {} end
-  local out = { " ", "|cffffd100Gesamtbedarf bis Skill 300|r – Route: " .. R.name,
+  local out = { " ", "##need|Gesamtbedarf bis Skill 300|Route: " .. R.name,
                 "|cff999999" .. R.note .. " Wechseln: /sp route " .. craft .. "|r" }
   for _, l in ipairs(L) do out[#out + 1] = l end
   for _, l in ipairs(ns.RouteCompareLines(craft, rank)) do out[#out + 1] = l end

@@ -2,7 +2,8 @@ local ADDON, ns = ...
 local CreateFrame = ns.CreateFrame  -- uebersetzt Texte je nach Sprache
 SkillPfadDB = SkillPfadDB or {}
 
-local DEFAULTS = { price = false, autoShow = true, topN = 3, scale = 1, locked = false, minimapShow = true }
+local DEFAULTS = { price = false, autoShow = true, topN = 3, scale = 1, locked = false, minimapShow = true,
+  lookSize = 13, lookSpacing = 2, lookTheme = "leder", lookText = "creme", lookAlpha = 100 }
 ns.tabRefresh = {}
 local lines = {
   leder = { "Öffne dein Lederverarbeitung-Fenster für Empfehlungen." },
@@ -24,10 +25,39 @@ local ICON = {
 }
 local function iconPath(key) return "Interface\\Icons\\" .. (ICON[key] or "INV_Misc_QuestionMark") end
 local FLAT = "Interface\\Buttons\\WHITE8X8"
-local BODY = CreateFont("SkillPfadBody")
+local BODY = CreateFont("SkillPfadBody")     -- Kartentext
 BODY:SetFont(STANDARD_TEXT_FONT, 13, "")
 BODY:SetTextColor(0.94, 0.92, 0.86)
-BODY:SetSpacing(4)
+BODY:SetSpacing(2)
+local HEAD = CreateFont("SkillPfadHead")     -- Abschnittstitel
+HEAD:SetFont(STANDARD_TEXT_FONT, 14, "")
+local INFO = CreateFont("SkillPfadInfo")     -- Kurzinfo rechts im Abschnittskopf
+INFO:SetFont(STANDARD_TEXT_FONT, 11, ""); INFO:SetTextColor(0.6, 0.6, 0.6)
+local TAB = CreateFont("SkillPfadTab")       -- Seitenleiste
+TAB:SetFont(STANDARD_TEXT_FONT, 13, "")
+
+-- Optik: Farbschemata (Hintergruende) und Textfarben, in den Optionen waehlbar
+local THEMES = {
+  leder = { name = "Farbschema: Leder (Standard)", card = { 0.11, 0.09, 0.07 }, now = { 0.16, 0.12, 0.05 },
+            pane = { 0.055, 0.045, 0.035 }, side = { 0.03, 0.025, 0.02 } },
+  dunkel = { name = "Farbschema: Dunkel", card = { 0.07, 0.07, 0.07 }, now = { 0.11, 0.10, 0.05 },
+            pane = { 0.02, 0.02, 0.02 }, side = { 0.01, 0.01, 0.01 } },
+  blau  = { name = "Farbschema: Nachtblau", card = { 0.06, 0.08, 0.14 }, now = { 0.11, 0.12, 0.17 },
+            pane = { 0.03, 0.04, 0.08 }, side = { 0.02, 0.03, 0.06 } },
+  wald  = { name = "Farbschema: Wald", card = { 0.07, 0.10, 0.07 }, now = { 0.12, 0.13, 0.06 },
+            pane = { 0.03, 0.05, 0.03 }, side = { 0.02, 0.035, 0.02 } },
+}
+local THEME_ORDER = { "leder", "dunkel", "blau", "wald" }
+local TEXTC = {
+  creme = { name = "Textfarbe: Creme (Standard)", 0.94, 0.92, 0.86 },
+  weiss = { name = "Textfarbe: Weiß", 1, 1, 1 },
+  grau  = { name = "Textfarbe: Hellgrau", 0.78, 0.78, 0.78 },
+  gold  = { name = "Textfarbe: Gold", 1, 0.86, 0.55 },
+}
+local TEXT_ORDER = { "creme", "weiss", "grau", "gold" }
+local function theme() return THEMES[SkillPfadDB.lookTheme] or THEMES.leder end
+local function lookAlpha() return math.max(0.3, math.min(1, (tonumber(SkillPfadDB.lookAlpha) or 100) / 100)) end
+local function headH() return math.max(22, (tonumber(SkillPfadDB.lookSize) or 13) + 10) end
 local PANEL = {
   bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
   edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -37,7 +67,11 @@ local PANEL = {
 
 ------------------------------------------------------------ Hauptfenster
 local f = CreateFrame("Frame", "SkillPfadWindow", UIParent, "BackdropTemplate")
-f:SetSize(720, 580)
+local DEF_W, DEF_H = 860, 660
+f:SetSize(DEF_W, DEF_H)
+f:SetResizable(true)
+if f.SetResizeBounds then f:SetResizeBounds(760, 600, 1600, 1200)
+elseif f.SetMinResize then f:SetMinResize(760, 600); f:SetMaxResize(1600, 1200) end
 f:SetBackdrop({
   bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
   edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
@@ -71,11 +105,26 @@ title:SetPoint("TOP", header, "TOP", 0, -14); title:SetText("SkillPfad")
 local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
 close:SetPoint("TOPRIGHT", -4, -4)
 
+-- Ziehgriff unten rechts: Fenstergroesse mit der Maus aendern
+local grip = CreateFrame("Button", nil, f)
+grip:SetSize(16, 16); grip:SetPoint("BOTTOMRIGHT", -8, 8); grip:SetFrameLevel((tonumber(f:GetFrameLevel()) or 1) + 20)
+grip:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+grip:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+grip:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+grip:SetScript("OnMouseDown", function() if not SkillPfadDB.locked then f:StartSizing("BOTTOMRIGHT") end end)
+grip:SetScript("OnMouseUp", function()
+  f:StopMovingOrSizing()
+  SkillPfadDB.size = { math.floor(f:GetWidth() + 0.5), math.floor(f:GetHeight() + 0.5) }
+  local p, _, rp, x, y = f:GetPoint()
+  SkillPfadDB.pos = { p, rp, x, y }
+  if ns.UpdateOpenBtn then ns.UpdateOpenBtn(ns.CurrentTab()) end
+end)
+
 -- Seitenleiste (Berufe)
 local side = CreateFrame("Frame", nil, f, "BackdropTemplate")
 side:SetBackdrop(PANEL); side:SetBackdropColor(0.03, 0.025, 0.02, 0.97)
 side:SetBackdropBorderColor(0.8, 0.7, 0.4, 1)
-side:SetPoint("TOPLEFT", 16, -44); side:SetSize(186, 520)
+side:SetPoint("TOPLEFT", 16, -44); side:SetPoint("BOTTOMLEFT", 16, 16); side:SetWidth(186)
 
 -- Inhaltsfläche
 local pane = CreateFrame("Frame", nil, f, "BackdropTemplate")
@@ -90,7 +139,10 @@ local hFrame = pane:CreateTexture(nil, "OVERLAY")        -- goldener Iconrahmen
 hFrame:SetTexture("Interface\\Buttons\\UI-Quickslot2")
 hFrame:SetSize(64, 64); hFrame:SetPoint("CENTER", hIcon, "CENTER", 0, -1)
 local hTitle = pane:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-hTitle:SetPoint("LEFT", hIcon, "RIGHT", 12, 0)
+hTitle:SetPoint("TOPLEFT", hIcon, "TOPRIGHT", 12, -1)
+local hSub = pane:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")   -- aktuelle Phase
+hSub:SetPoint("TOPLEFT", hTitle, "BOTTOMLEFT", 0, -4); hSub:SetWidth(265); hSub:SetJustifyH("LEFT")
+if hSub.SetWordWrap then hSub:SetWordWrap(false) end
 local hLine = pane:CreateTexture(nil, "ARTWORK")
 hLine:SetTexture(FLAT)
 hLine:SetVertexColor(0.8, 0.65, 0.2, 0.7)
@@ -98,7 +150,7 @@ hLine:SetHeight(1); hLine:SetPoint("TOPLEFT", 8, -58); hLine:SetPoint("TOPRIGHT"
 
 -- Skillbalken (wie die Berufsleiste im Spiel)
 local bar = CreateFrame("StatusBar", nil, pane, "BackdropTemplate")
-bar:SetSize(150, 16); bar:SetPoint("TOPRIGHT", -14, -22)
+bar:SetSize(150, 16); bar:SetPoint("TOPRIGHT", -14, -12)
 bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 bar:SetMinMaxValues(0, 300)
 bar:SetBackdrop({ bgFile = FLAT, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
@@ -126,7 +178,7 @@ local function updateOpenBtn(key)
   if f:IsShown() and r and t and d and not d.gather and not (ns.TradeFrameShown and ns.TradeFrameShown()) then
     openBtn:SetScale(f:GetScale())
     openBtn:ClearAllPoints()
-    openBtn:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", r - 170, t - 19)
+    openBtn:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", r - 14, t - 32)
     openBtn:SetAttribute("spell", ns.SpellName and ns.SpellName(key) or d.label)
     openBtn:Show()
   else
@@ -139,7 +191,7 @@ ns.UpdateOpenBtn = updateOpenBtn
 local sf = CreateFrame("ScrollFrame", "SkillPfadScroll", pane, "UIPanelScrollFrameTemplate")
 sf:SetPoint("TOPLEFT", 10, -66); sf:SetPoint("BOTTOMRIGHT", -30, 10)
 local child = CreateFrame("Frame", nil, sf)
-local CW = 450
+local CW = 450      -- Kartenbreite, passt sich der Fenstergroesse an
 child:SetSize(CW, 10); sf:SetScrollChild(child)
 local cards = {}
 
@@ -147,31 +199,53 @@ local cards = {}
 local opt = CreateFrame("Frame", nil, pane)
 opt:SetPoint("TOPLEFT", 14, -64); opt:SetPoint("BOTTOMRIGHT", -14, 10)
 opt:Hide()
+-- Zweite Optionsseite: Optik
+local look = CreateFrame("Frame", nil, pane)
+look:SetPoint("TOPLEFT", 14, -64); look:SetPoint("BOTTOMRIGHT", -14, 10)
+look:Hide()
+local lookPage = false
 
 ------------------------------------------------------------ Tabs
 local tabBtn = {}
 
-local actions = {}      -- Tab -> Liste von { text, fn } (Wegpunkt-Buttons)
-local btnPool = {}
-local actionHead = child:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-actionHead:SetText("|cffffd100Wegpunkte (TomTom)|r")
-actionHead:Hide()
+local actions = {}      -- Tab -> Liste von { text, fn, sec } (Wegpunkt-Buttons; sec = Abschnitt, in dem der Knopf steht)
 
-local function actionButton(i)
-  local b = btnPool[i]
-  if not b then
-    b = CreateFrame("Button", nil, child, "UIPanelButtonTemplate")
-    b:SetSize(CW - 4, 26)
-    b:SetScript("OnClick", function(self) if self.fn then self.fn() end end)
-    btnPool[i] = b
-  end
-  return b
-end
-
-local ACCENT = {
+-- Abschnitte: eine Zeile "##schluessel|Titel|Info" beginnt eine Karte, die sich einklappen laesst
+local SEC = {
+  now   = { 1.00, 0.82, 0.00, fixed = true },
+  warn  = { 0.95, 0.30, 0.22, open = true },
+  alt   = { 0.90, 0.75, 0.25, open = true },
+  tips  = { 0.70, 0.65, 0.55 },
+  gunst = { 0.95, 0.60, 0.20 },
+  quest = { 0.35, 0.62, 0.98 },
+  shop  = { 0.40, 0.82, 0.40 },
+  need  = { 0.40, 0.82, 0.40 },
+  plan  = { 0.75, 0.50, 0.95 },
+  weg   = { 0.80, 0.68, 0.40 },
+  way   = { 0.30, 0.80, 0.80, open = true },
+}
+local ACCENT = {   -- Karten ohne Abschnittskopf
   { "Wichtig", 0.95, 0.30, 0.22 }, { "Berufsquests", 0.35, 0.62, 0.98 },
   { "Einkaufsliste", 0.40, 0.82, 0.40 }, { "Gesamtbedarf", 0.40, 0.82, 0.40 }, { "Planung", 0.75, 0.50, 0.95 },
 }
+local PLUS, MINUS = "Interface\\Buttons\\UI-PlusButton-Up", "Interface\\Buttons\\UI-MinusButton-Up"
+local ARROW = "Interface\\ChatFrame\\ChatFrameExpandArrow"
+
+local function isOpen(key)
+  local s = SEC[key]
+  if not s or s.fixed then return true end
+  local fo = SkillPfadDB.fold and SkillPfadDB.fold[current .. ":" .. key]
+  if fo == nil then return s.open and true or false end
+  return fo
+end
+
+local render
+local function toggle(key)
+  SkillPfadDB.fold = SkillPfadDB.fold or {}
+  SkillPfadDB.fold[current .. ":" .. key] = not isOpen(key)
+  render()
+end
+
 local function card(i)
   local c = cards[i]
   if not c then
@@ -183,9 +257,47 @@ local function card(i)
     c.text = c:CreateFontString(nil, "OVERLAY", "SkillPfadBody")
     c.text:SetPoint("TOPLEFT", 16, -10); c.text:SetWidth(CW - 32)
     c.text:SetJustifyH("LEFT"); c.text:SetJustifyV("TOP")
+    -- Kopfzeile zum Ein-/Ausklappen
+    local hd = CreateFrame("Button", nil, c)
+    hd:SetHeight(22); hd:SetPoint("TOPLEFT", 10, -4); hd:SetPoint("TOPRIGHT", -6, -4)
+    hd:SetHighlightTexture("Interface\\Buttons\\UI-Listbox-Highlight2", "ADD")
+    hd:SetScript("OnClick", function(self) if self.key then toggle(self.key) end end)
+    c.chev = hd:CreateTexture(nil, "ARTWORK"); c.chev:SetSize(14, 14); c.chev:SetPoint("LEFT", 2, 0)
+    c.title = hd:CreateFontString(nil, "OVERLAY", "SkillPfadHead")
+    c.title:SetPoint("LEFT", 22, 0); c.title:SetJustifyH("LEFT")
+    c.info = hd:CreateFontString(nil, "OVERLAY", "SkillPfadInfo")
+    c.info:SetPoint("RIGHT", -4, 0); c.info:SetPoint("LEFT", c.title, "RIGHT", 10, 0)
+    c.info:SetJustifyH("RIGHT")
+    if c.info.SetWordWrap then c.info:SetWordWrap(false) end
+    c.head = hd; c.segs = {}; c.btns = {}
     cards[i] = c
   end
   return c
+end
+
+-- TomTom-Knoepfe innerhalb einer Karte
+local function cardButton(c, j)
+  local b = c.btns[j]
+  if not b then
+    b = CreateFrame("Button", nil, c, "UIPanelButtonTemplate")
+    b:SetHeight(22)
+    b:SetScript("OnClick", function(self)
+      local a = (actions[current] or {})[self.ai]
+      if a and a.fn then a.fn() end
+    end)
+    c.btns[j] = b
+  end
+  return b
+end
+
+-- Balken "Der ganze Weg": ein Stueck je Phase
+local function seg(c, j)
+  local t = c.segs[j]
+  if not t then
+    t = c:CreateTexture(nil, "ARTWORK"); t:SetTexture(FLAT); t:SetHeight(6)
+    c.segs[j] = t
+  end
+  return t
 end
 
 local function blocksOf(list)
@@ -199,54 +311,129 @@ local function blocksOf(list)
   return blocks
 end
 
-local function render()
+render = function()
   updateOpenBtn(current)
   hIcon:SetTexture(iconPath(current))
   hTitle:SetText(current == "opt" and "Optionen" or (ns.defs[current] and ns.defs[current].label) or "")
-  -- Skillbalken
+  -- Skillbalken und Phase
   local rank = (current ~= "opt" and ns.RankOf) and ns.RankOf(current) or nil
   if rank then
-    bar:SetValue(rank); barText:SetText(rank .. " / 300")
+    local mx = tonumber(SkillPfadDB.maxRanks and SkillPfadDB.maxRanks[current]) or 300
+    if mx < rank or mx <= 0 then mx = 300 end
+    bar:SetMinMaxValues(0, mx); bar:SetValue(rank); barText:SetText(rank .. " / " .. mx)
     bar:SetStatusBarColor(rank >= 300 and 0.2 or 0.85, rank >= 300 and 0.8 or 0.65, 0.1)
     bar:Show()
   else bar:Hide() end
+  local ph = rank and ns.defs[current] and ns.phaseFor and ns.phaseFor(current, rank)
+  if ph then
+    hSub:SetText(ns.fmt("Phase: |cff00ff00%s|r  (%d-%d)", ph[3], ph[1], math.min(ph[2], 300))); hSub:Show()
+  else hSub:SetText(""); hSub:Hide() end
   if current == "opt" then
-    sf:Hide(); opt:Show(); ns.UpdateOptions()
+    sf:Hide()
+    if lookPage then opt:Hide(); look:Show() else look:Hide(); opt:Show() end
+    ns.UpdateOptions()
   else
-    opt:Hide(); sf:Show()
+    opt:Hide(); look:Hide(); sf:Show()
     for _, c in ipairs(cards) do c:Hide() end
-    for _, b in ipairs(btnPool) do b:Hide() end
+    local sw = sf:GetWidth()
+    if type(sw) == "number" and sw > 300 then CW = math.floor(sw) end
+    child:SetWidth(CW)
+    local acts = actions[current] or {}
+    local blocks = blocksOf(lines[current] or {})
+    local present, secActs, rest = {}, {}, {}
+    for _, blk in ipairs(blocks) do
+      local k = blk[1]:match("^##([%w_]+)|")
+      if k then present[k] = true end
+    end
+    for i, a in ipairs(acts) do
+      if a.sec and present[a.sec] then
+        secActs[a.sec] = secActs[a.sec] or {}
+        table.insert(secActs[a.sec], i)
+      elseif not a.only then
+        rest[#rest + 1] = i
+      end
+    end
+    if #rest > 0 then blocks[#blocks + 1] = { "##way|Wegpunkte (TomTom)|" }; secActs.way = rest end
     local y = 2
-    for i, blk in ipairs(blocksOf(lines[current] or {})) do
+    for i, blk in ipairs(blocks) do
       local c = card(i)
-      local txt = table.concat(blk, "\n")
-      c.text:SetText(txt)
+      for _, bt in ipairs(c.btns) do bt:Hide() end
+      for _, t in ipairs(c.segs) do t:Hide() end
+      local key, ttl, info = blk[1]:match("^##([%w_]+)|([^|]*)|?(.*)$")
+      local body = {}
+      for j = key and 2 or 1, #blk do body[#body + 1] = blk[j] end
+      local txt = table.concat(body, "\n")
       local r, g, b = 0.90, 0.75, 0.25
-      for _, a in ipairs(ACCENT) do if txt:find(a[1], 1, true) then r, g, b = a[2], a[3], a[4]; break end end
+      if key and SEC[key] then r, g, b = SEC[key][1], SEC[key][2], SEC[key][3]
+      elseif not key then
+        for _, a in ipairs(ACCENT) do if txt:find(a[1], 1, true) then r, g, b = a[2], a[3], a[4]; break end end
+      end
+      local open = (not key) or isOpen(key)
+      local top = 10
+      if key then
+        local foldable = not (SEC[key] and SEC[key].fixed)
+        c.head.key = foldable and key or nil
+        c.head:EnableMouse(foldable)
+        if foldable then c.chev:SetTexture(open and MINUS or PLUS); c.chev:SetVertexColor(1, 1, 1)
+        else c.chev:SetTexture(ARROW); c.chev:SetVertexColor(1, 0.82, 0) end
+        c.chev:Show()
+        c.head:SetHeight(headH())
+        c.title:SetFontObject(HEAD); c.title:SetText(ttl); c.title:SetTextColor(r, g, b)
+        c.info:SetFontObject(INFO); c.info:SetText(info or "")
+        c.head:Show()
+        top = headH() + 8
+      else
+        c.head:Hide()
+      end
+      -- Phasenbalken
+      if open and key == "weg" then
+        local def = ns.defs[current]
+        local W, x = CW - 34, 0
+        for j, p in ipairs(def and def.phases or {}) do
+          local a1, a2 = p[1], math.min(p[2], 300)
+          local w = math.max(2, (a2 - a1) / 300 * W - 2)
+          local t = seg(c, j)
+          t:ClearAllPoints(); t:SetPoint("TOPLEFT", c, "TOPLEFT", 16 + x, -top); t:SetWidth(w)
+          if rank and rank >= a2 then t:SetVertexColor(0.30, 0.55, 0.25, 1)
+          elseif rank and rank >= a1 then t:SetVertexColor(0.95, 0.75, 0.15, 1)
+          else t:SetVertexColor(0.25, 0.21, 0.15, 1) end
+          t:Show()
+          x = x + w + 2
+        end
+        top = top + 14
+      end
+      local h = top
+      if open and txt ~= "" then
+        c.text:ClearAllPoints(); c.text:SetPoint("TOPLEFT", key and 14 or 16, -top)
+        c.text:SetWidth(CW - 32)
+        c.text:SetFontObject(BODY); c.text:SetText(txt); c.text:Show()
+        h = h + c.text:GetStringHeight() + (key and 8 or 12)
+      else
+        c.text:SetText(""); c.text:Hide()
+      end
+      local list = (open and key and secActs[key]) or {}
+      for j, ai in ipairs(list) do
+        local bt = cardButton(c, j)
+        bt.ai = ai
+        bt:ClearAllPoints(); bt:SetPoint("TOPLEFT", c, "TOPLEFT", 14, -h); bt:SetWidth(CW - 30)
+        bt:SetText(acts[ai].text); bt:Show()
+        h = h + 24
+      end
+      if #list > 0 then h = h + 4 end
+      if key and not open then h = headH() + 8 end
       c.accent:SetVertexColor(r, g, b, 1)
-      c:SetBackdropColor(0.11, 0.09, 0.07, 1)
-      c:SetBackdropBorderColor(r * 0.7, g * 0.7, b * 0.7, 0.9)
-      local h = c.text:GetStringHeight() + 22
+      if key then c.accent:Hide() else c.accent:Show() end   -- Abschnitte: farbiger Rahmen statt Balken
+      local th, al = theme(), lookAlpha()
+      if key == "now" then
+        c:SetBackdropColor(th.now[1], th.now[2], th.now[3], al)
+        c:SetBackdropBorderColor(r, g, b, 1)
+      else
+        c:SetBackdropColor(th.card[1], th.card[2], th.card[3], al)
+        c:SetBackdropBorderColor(r * 0.7, g * 0.7, b * 0.7, 0.9)
+      end
       c:ClearAllPoints(); c:SetPoint("TOPLEFT", child, "TOPLEFT", 0, -y); c:SetSize(CW, h)
       c:Show()
-      y = y + h + 8
-    end
-    local list = actions[current] or {}
-    if #list > 0 then
-      actionHead:ClearAllPoints()
-      actionHead:SetPoint("TOPLEFT", child, "TOPLEFT", 4, -(y + 2))
-      actionHead:Show()
-      y = y + 26
-      for i, a in ipairs(list) do
-        local b = actionButton(i)
-        b:ClearAllPoints()
-        b:SetPoint("TOPLEFT", child, "TOPLEFT", 0, -y)
-        b:SetText(a.text); b.fn = a.fn
-        b:Show()
-        y = y + 28
-      end
-    else
-      actionHead:Hide()
+      y = y + h + 6
     end
     child:SetHeight(y + 10)
   end
@@ -271,7 +458,8 @@ local function layoutTabs()
     local b = tabBtn[key]
     if b then
       if ns.Enabled(key) then
-        b:ClearAllPoints(); b:SetPoint("TOPLEFT", 7, -8 - n * 38); b:Show(); n = n + 1
+        local gap = (key == "opt") and 10 or 0    -- Optionen etwas abgesetzt
+        b:ClearAllPoints(); b:SetPoint("TOPLEFT", 7, -8 - n * 38 - gap); b:Show(); n = n + 1
       else b:Hide() end
     end
   end
@@ -284,6 +472,7 @@ local function showTab(key)
     for _, k in ipairs(ns.order) do if ns.Enabled(k) then key = k; break end end
   end
   current = key
+  if key ~= "opt" then lookPage = false end
   if ns.tabRefresh[key] then ns.tabRefresh[key]() end
   render()
 end
@@ -302,7 +491,7 @@ for i, key in ipairs(keys) do
   local ic = b:CreateTexture(nil, "ARTWORK")
   ic:SetSize(24, 24); ic:SetPoint("LEFT", 3, 0); ic:SetTexture(iconPath(key))
   ic:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-  local lb = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  local lb = b:CreateFontString(nil, "OVERLAY", "SkillPfadTab")
   lb:SetPoint("LEFT", ic, "RIGHT", 7, 0); lb:SetJustifyH("LEFT")
   lb:SetText(key == "opt" and "Optionen" or ns.defs[key].label)
   b.label = lb
@@ -320,15 +509,13 @@ layoutTabs()
 local lineSig, actSig = {}, {}
 function ns.SetActions(tab, list)
   local t = {}
-  for i, a in ipairs(list) do t[i] = a.text end
+  for i, a in ipairs(list) do t[i] = (a.sec or "") .. ":" .. a.text end
   local sig = table.concat(t, "\n")
   local same = (actSig[tab] == sig)
   actSig[tab] = sig
   actions[tab] = list
-  if not (f:IsShown() and current == tab) then return end
-  if same then
-    for i, a in ipairs(list) do if btnPool[i] then btnPool[i].fn = a.fn end end
-  else render() end
+  -- Knoepfe holen ihre Funktion beim Klick aus actions, bei gleichem Inhalt reicht das Ersetzen der Liste
+  if not same and f:IsShown() and current == tab then render() end
 end
 
 function ns.SetLines(tab, l)
@@ -361,16 +548,33 @@ end
 function ns.CloseWindow() f:Hide() end
 function ns.WindowShown() return f:IsShown() end
 function ns.CurrentTab() return current end
-function ns.ResetPos() SkillPfadDB.pos = nil; if f:IsShown() then ns.PlaceWindow(); updateOpenBtn(current) end end
+function ns.ResetPos()
+  SkillPfadDB.pos = nil; SkillPfadDB.size = nil
+  f:SetSize(DEF_W, DEF_H)
+  if f:IsShown() then ns.PlaceWindow(); updateOpenBtn(current); render() end
+end
+f:SetScript("OnSizeChanged", function() if f:IsShown() and current ~= "opt" then render() end end)
 
 ------------------------------------------------------------ Einstellungen: Steuerelemente
 local controls = {}
+local P = opt        -- Elternrahmen fuer die folgenden Steuerelemente
 
-local function check(name, label, key, y, onChange)
-  local c = CreateFrame("CheckButton", "SkillPfadChk" .. name, opt, "UICheckButtonTemplate")
-  c:SetPoint("TOPLEFT", 0, y)
+local COL2 = 360     -- rechte Spalte
+
+-- Gruppenueberschrift mit Linie
+local function head(text, x, y, w)
+  local t = P:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  t:SetPoint("TOPLEFT", x, y); t:SetText(text)
+  local ln = P:CreateTexture(nil, "ARTWORK"); ln:SetTexture(FLAT); ln:SetVertexColor(0.8, 0.65, 0.2, 0.5)
+  ln:SetHeight(1); ln:SetWidth(w or 300); ln:SetPoint("TOPLEFT", x, y - 16)
+  return t
+end
+
+local function check(name, label, key, x, y, onChange)
+  local c = CreateFrame("CheckButton", "SkillPfadChk" .. name, P, "UICheckButtonTemplate")
+  c:SetPoint("TOPLEFT", x, y)
   local t = ns.WrapObj(_G[c:GetName() .. "Text"])
-  t:SetText(label); t:SetWidth(240); t:SetJustifyH("LEFT")
+  t:SetText(label); t:SetWidth(290); t:SetJustifyH("LEFT")
   c:SetScript("OnClick", function(self)
     SkillPfadDB[key] = self:GetChecked() and true or false
     if onChange then onChange() end
@@ -378,36 +582,10 @@ local function check(name, label, key, y, onChange)
   controls[#controls + 1] = { c, key }
 end
 
-check("Price",  "Nach AH-Preisen sortieren (statt Farm-Aufwand)", "price", 0,
-  function() if ns.Refresh then ns.Refresh() end end)
-check("Auto",   "Fenster automatisch beim Beruf öffnen", "autoShow", -32)
-check("Lock",   "Fenster sperren (nicht verschiebbar)", "locked", -64)
-check("Mini",   "Knopf an der Minimap anzeigen", "minimapShow", -134,
-  function() if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end end)
-check("Way",    "Wegpunkte per TomTom-Befehl /way setzen (falls sie falsch sitzen)", "wayMode", -96)
-
--- Berufe ein-/ausschalten (rechte Spalte)
-local profChecks = {}
-local profHead = opt:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-profHead:SetPoint("TOPLEFT", 300, 0); profHead:SetText("Berufe anzeigen")
-for i, key in ipairs(ns.order) do
-  local c = CreateFrame("CheckButton", "SkillPfadProf" .. key, opt, "UICheckButtonTemplate")
-  c:SetPoint("TOPLEFT", 296, -18 - (i - 1) * 26)
-  local t = ns.WrapObj(_G[c:GetName() .. "Text"])
-  t:SetText(ns.defs[key].label); t:SetWidth(130); t:SetJustifyH("LEFT")
-  c:SetScript("OnClick", function(self)
-    SkillPfadDB.off = SkillPfadDB.off or {}
-    SkillPfadDB.off[key] = (not self:GetChecked()) or nil
-    layoutTabs()
-    if not ns.Enabled(current) then showTab(current) end
-  end)
-  profChecks[key] = c
-end
-
-local function slider(name, label, key, y, minV, maxV, step, fmt, onChange)
+local function slider(name, label, key, x, y, minV, maxV, step, fmt, onChange)
   local sname = "SkillPfadSlider" .. name
-  local s = CreateFrame("Slider", sname, opt, "OptionsSliderTemplate")
-  s:SetPoint("TOPLEFT", 8, y); s:SetWidth(280)
+  local s = CreateFrame("Slider", sname, P, "OptionsSliderTemplate")
+  s:SetPoint("TOPLEFT", x + 8, y); s:SetWidth(280)
   s:SetMinMaxValues(minV, maxV); s:SetValueStep(step)
   if s.SetObeyStepOnDrag then s:SetObeyStepOnDrag(true) end
   ns.WrapObj(_G[sname .. "Text"])
@@ -423,28 +601,33 @@ local function slider(name, label, key, y, minV, maxV, step, fmt, onChange)
   controls[#controls + 1] = { s, key, true }
 end
 
-slider("TopN",  "Angezeigte Rezepte", "topN", -190, 1, 5, 1, "%d",
-  function() if ns.Refresh then ns.Refresh() end end)
-slider("Scale", "Fenstergröße", "scale", -246, 0.7, 1.3, 0.05, "%.2f",
-  function(v) f:SetScale(v); if ns.UpdateOpenBtn then ns.UpdateOpenBtn(ns.CurrentTab()) end end)
-
-local function button(label, y, onClick)
-  local b = CreateFrame("Button", nil, opt, "UIPanelButtonTemplate")
-  b:SetSize(290, 24); b:SetPoint("TOPLEFT", 0, y)
+local function button(label, x, y, w, onClick)
+  local b = CreateFrame("Button", nil, P, "UIPanelButtonTemplate")
+  b:SetSize(w or 296, 24); b:SetPoint("TOPLEFT", x, y)
   b:SetText(label); b:SetScript("OnClick", onClick)
   return b
 end
 
-local scanBtn = button("AH-Preise scannen (AH muss offen sein)", -290, function() ns.StartScan() end)
-if not (CanSendAuctionQuery and QueryAuctionItems) then
-  scanBtn:SetText("Preise: über Auctionator (Liste am AH suchen)")
-  scanBtn:Disable()
-end
-button("Gespeicherte Preise löschen", -320, function()
-  SkillPfadDB.prices = {}; ns.UpdateOptions()
-  if ns.Refresh then ns.Refresh() end
-end)
-button("Fensterposition zurücksetzen", -350, function() ns.ResetPos() end)
+-- Linke Spalte: Anzeige und Verhalten
+head("Anzeige und Verhalten", 0, 0, 320)
+check("Price", "Nach AH-Preisen sortieren (statt Farm-Aufwand)", "price", 0, -22,
+  function() if ns.Refresh then ns.Refresh() end end)
+check("Auto",  "Fenster automatisch beim Beruf öffnen", "autoShow", 0, -50)
+check("Lock",  "Fenster sperren (nicht verschiebbar)", "locked", 0, -78)
+check("Mini",  "Knopf an der Minimap anzeigen", "minimapShow", 0, -106,
+  function() if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end end)
+check("Way",   "Wegpunkte per TomTom-Befehl /way setzen (falls sie falsch sitzen)", "wayMode", 0, -134)
+
+-- Linke Spalte: Fenster und Inhalt
+head("Fenster und Inhalt", 0, -182, 320)
+slider("TopN",  "Angezeigte Rezepte", "topN", 0, -222, 1, 5, 1, "%d",
+  function() if ns.Refresh then ns.Refresh() end end)
+slider("Scale", "Skalierung", "scale", 0, -272, 0.7, 1.3, 0.05, "%.2f",
+  function(v) f:SetScale(v); if ns.UpdateOpenBtn then ns.UpdateOpenBtn(ns.CurrentTab()) end end)
+button("Fenster zurücksetzen (Position und Größe)", 0, -306, 320, function() ns.ResetPos() end)
+
+-- Linke Spalte: Route, Sprache und Preise
+head("Route, Sprache und Preise", 0, -346, 320)
 function ns.RefreshAll()
   for _, fn in pairs(ns.tabRefresh) do pcall(fn) end
 end
@@ -461,11 +644,10 @@ local function routeText()
   local r = ns.RouteOf and ns.RouteOf(k)
   return "Route " .. ((ns.defs[k] and ns.defs[k].label) or k) .. ": " .. (r and r.name or "?")
 end
-routeBtn = button("Route", -380, function()
+routeBtn = button("Route", 0, -368, 320, function()
   ns.NextRoute(routeKey()); routeBtn:SetText(routeText())
   if ns.RefreshAll then ns.RefreshAll() end
 end)
-routeBtn:SetWidth(320)
 
 -- Sprache: Auto (nach Client) -> Deutsch -> English
 local langBtn
@@ -474,19 +656,115 @@ local function langText()
   local cur = (l == "de" and "Deutsch") or (l == "en" and "English") or ("Auto (" .. (ns.lang == "en" and "English" or "Deutsch") .. ")")
   return "Sprache / Language: " .. cur
 end
-langBtn = button("Sprache / Language", -410, function()
+langBtn = button("Sprache / Language", 0, -396, 320, function()
   local l = SkillPfadDB.lang
   local nxt = (l == nil and "de") or (l == "de" and "en") or nil
   ns.SetLang(nxt)
   langBtn:SetText(langText())
   if ns.UpdateOptions then ns.UpdateOptions() end
 end)
-langBtn:SetWidth(320)
+local scanBtn = button("AH-Preise scannen (AH muss offen sein)", 0, -424, 320, function() ns.StartScan() end)
+if not (CanSendAuctionQuery and QueryAuctionItems) then
+  scanBtn:SetText("Preise: über Auctionator (Liste am AH suchen)")
+  scanBtn:Disable()
+end
+button("Gespeicherte Preise löschen", 0, -452, 320, function()
+  SkillPfadDB.prices = {}; ns.UpdateOptions()
+  if ns.Refresh then ns.Refresh() end
+end)
 
+-- Rechte Spalte: Berufe ein-/ausschalten
+local profChecks = {}
+head("Berufe anzeigen", COL2, 0, 240)
+for i, key in ipairs(ns.order) do
+  local c = CreateFrame("CheckButton", "SkillPfadProf" .. key, opt, "UICheckButtonTemplate")
+  c:SetPoint("TOPLEFT", COL2, -20 - (i - 1) * 24)
+  local t = ns.WrapObj(_G[c:GetName() .. "Text"])
+  t:SetText(ns.defs[key].label); t:SetWidth(200); t:SetJustifyH("LEFT")
+  c:SetScript("OnClick", function(self)
+    SkillPfadDB.off = SkillPfadDB.off or {}
+    SkillPfadDB.off[key] = (not self:GetChecked()) or nil
+    layoutTabs()
+    if not ns.Enabled(current) then showTab(current) end
+  end)
+  profChecks[key] = c
+end
+
+-- Rechte Spalte: Optik und Status
+head("Optik", COL2, -322, 240)
 local status = opt:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-status:SetPoint("TOPLEFT", 0, -444); status:SetWidth(310); status:SetJustifyH("LEFT")
+status:SetPoint("TOPLEFT", COL2, -380); status:SetWidth(240); status:SetJustifyH("LEFT")
+
+------------------------------------------------------------ Optik-Seite
+local lookBtn = CreateFrame("Button", nil, opt, "UIPanelButtonTemplate")
+lookBtn:SetSize(240, 24); lookBtn:SetPoint("TOPLEFT", COL2, -344)
+lookBtn:SetText("Optik anpassen …")
+lookBtn:SetScript("OnClick", function() lookPage = true; render() end)
+
+P = look
+head("Optik anpassen", 0, 0, 320)
+head("Vorschau", COL2, 0, 240)
+local function cycle(order, cur)
+  for i, k in ipairs(order) do if k == cur then return order[i % #order + 1] end end
+  return order[1]
+end
+local themeBtn, textBtn
+themeBtn = button("Farbschema", 0, -24, 320, function()
+  SkillPfadDB.lookTheme = cycle(THEME_ORDER, SkillPfadDB.lookTheme); ns.ApplyLook()
+end)
+textBtn = button("Textfarbe", 0, -54, 320, function()
+  SkillPfadDB.lookText = cycle(TEXT_ORDER, SkillPfadDB.lookText); ns.ApplyLook()
+end)
+slider("Size",    "Schriftgröße", "lookSize", 0, -106, 9, 18, 1, "%d", function() ns.ApplyLook() end)
+slider("Spacing", "Zeilenabstand", "lookSpacing", 0, -156, 0, 8, 1, "%d", function() ns.ApplyLook() end)
+slider("Alpha",   "Hintergrund-Deckkraft", "lookAlpha", 0, -206, 40, 100, 5, "%d %%", function() ns.ApplyLook() end)
+
+-- Vorschau einer Karte
+local pv = CreateFrame("Frame", nil, look, "BackdropTemplate")
+pv:SetBackdrop({ bgFile = FLAT, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
+  insets = { left = 2, right = 2, top = 2, bottom = 2 } })
+pv:SetPoint("TOPLEFT", COL2, -24); pv:SetSize(240, 90)
+local pvTitle = pv:CreateFontString(nil, "OVERLAY", "SkillPfadHead")
+pvTitle:SetPoint("TOPLEFT", 12, -8); pvTitle:SetText("Jetzt"); pvTitle:SetTextColor(1, 0.82, 0)
+local pvText = pv:CreateFontString(nil, "OVERLAY", "SkillPfadBody")
+pvText:SetPoint("TOPLEFT", pvTitle, "BOTTOMLEFT", 0, -6); pvText:SetWidth(216); pvText:SetJustifyH("LEFT")
+local function updatePreview()
+  local th, al = theme(), lookAlpha()
+  pv:SetBackdropColor(th.now[1], th.now[2], th.now[3], al)
+  pv:SetBackdropBorderColor(1, 0.82, 0, 1)
+  pvTitle:SetFontObject(HEAD); pvText:SetFontObject(BODY)
+  pvText:SetText(ns.fmt("%s%s|r herstellen", "|cffff8040", "Leichtes Rüstungsset") ..
+    "\n|cff00ff00Leichtes Leder: 1/1|r   |cffff4040Grober Faden: 0/1|r\n|cff999999Fehlt: Grober Faden -> Händler|r")
+  pv:SetHeight(pvTitle:GetStringHeight() + pvText:GetStringHeight() + 26)
+end
+
+button("Standard wiederherstellen", 0, -246, 320, function()
+  for _, k in ipairs({ "lookSize", "lookSpacing", "lookTheme", "lookText", "lookAlpha" }) do SkillPfadDB[k] = DEFAULTS[k] end
+  ns.UpdateOptions(); ns.ApplyLook()
+end)
+button("Zurück zu den Optionen", 0, -276, 320, function() lookPage = false; render() end)
+P = opt
+
+function ns.ApplyLook()
+  local sz = tonumber(SkillPfadDB.lookSize) or 13
+  local sp = tonumber(SkillPfadDB.lookSpacing) or 2
+  local tc = TEXTC[SkillPfadDB.lookText] or TEXTC.creme
+  BODY:SetFont(STANDARD_TEXT_FONT, sz, ""); BODY:SetSpacing(sp); BODY:SetTextColor(tc[1], tc[2], tc[3])
+  HEAD:SetFont(STANDARD_TEXT_FONT, sz + 1, "")
+  INFO:SetFont(STANDARD_TEXT_FONT, math.max(9, sz - 2), "")
+  TAB:SetFont(STANDARD_TEXT_FONT, sz, "")
+  for _, b in pairs(tabBtn) do b.label:SetFontObject(TAB) end
+  local th, al = theme(), lookAlpha()
+  pane:SetBackdropColor(th.pane[1], th.pane[2], th.pane[3], al)
+  side:SetBackdropColor(th.side[1], th.side[2], th.side[3], al)
+  f:SetBackdropColor(1, 1, 1, al)
+  updatePreview()
+  if f:IsShown() then render() end
+end
 
 function ns.UpdateOptions()
+  if themeBtn then themeBtn:SetText(theme().name) end
+  if textBtn then textBtn:SetText((TEXTC[SkillPfadDB.lookText] or TEXTC.creme).name) end
   if routeBtn and ns.RouteOf then routeBtn:SetText(routeText()) end
   if langBtn then langBtn:SetText(langText()) end
   loading = true
@@ -514,7 +792,7 @@ init:SetScript("OnEvent", function(_, _, name)
   end
   -- Datenbank-Version und Grundpruefung (alte/kaputte Daten verwerfen statt Fehler zu werfen)
   local DBV = 1
-  for _, tk in ipairs({ "off", "cache", "routes", "ranks" }) do
+  for _, tk in ipairs({ "off", "cache", "routes", "ranks", "fold", "maxRanks" }) do
     if type(SkillPfadDB[tk]) ~= "table" then SkillPfadDB[tk] = nil end
   end
   if (tonumber(SkillPfadDB.dbVersion) or 0) < DBV then
@@ -524,6 +802,11 @@ init:SetScript("OnEvent", function(_, _, name)
   if ns.InitLang then ns.InitLang() end
   if ns.RelabelUI then ns.RelabelUI() end
   f:SetScale(SkillPfadDB.scale or 1)
+  local sz = SkillPfadDB.size
+  if type(sz) == "table" and tonumber(sz[1]) and tonumber(sz[2]) then
+    f:SetSize(math.max(760, math.min(1600, sz[1])), math.max(600, math.min(1200, sz[2])))
+  else SkillPfadDB.size = nil end
+  ns.ApplyLook()
 end)
 
 -- Kampf: der geschuetzte Knopf wird vorher ausgeblendet und danach wieder gezeigt

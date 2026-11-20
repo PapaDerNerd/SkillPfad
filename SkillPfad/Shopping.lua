@@ -41,7 +41,7 @@ end
 function ns.ShoppingLines(list, rank, ph, maxRank, usePrice)
   local r = list and list[1]
   if not r or not ph then return {} end
-  local out = { " ", "|cffffd100Einkaufsliste (Schätzung für das beste Rezept):|r" }
+  local out = { " ", "##shop|Einkaufsliste|Schätzung für das beste Rezept" }
   local phaseEnd = math.min(ph[2], 300, maxRank > 0 and maxRank or 300)
   local b1 = block(r, rank, phaseEnd, "Phase", usePrice)
   if b1 then for _, l in ipairs(b1) do out[#out + 1] = l end end

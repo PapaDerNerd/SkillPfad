@@ -30,26 +30,24 @@ local function build(key)
   local L = {}
   if not rank then
     L[#L + 1] = "|cffff8040" .. def.label .. " nicht gefunden (nicht erlernt?).|r"
-    L[#L + 1] = "Zur Übersicht hier der ganze Weg:"
+    L[#L + 1] = "Der ganze Weg steht unten (aufklappen)."
   else
     SkillPfadDB.ranks = SkillPfadDB.ranks or {}
     SkillPfadDB.ranks[key] = rank
+    SkillPfadDB.maxRanks = SkillPfadDB.maxRanks or {}
+    SkillPfadDB.maxRanks[key] = maxRank
     local ph = ns.phaseFor(key, rank)
-    L[#L + 1] = ns.fmt("|cffffd100%s – Skill: %d / %d|r", def.label, rank, maxRank)
+    L[#L + 1] = "##now|Jetzt|"
     if rank >= maxRank and maxRank < 300 then
       L[#L + 1] = "|cffff8040Maximum erreicht: Lerne beim Lehrer die nächste Stufe.|r"
     end
-    L[#L + 1] = ns.fmt("Aktuelle Phase: |cff00ff00%s|r", ph[3])
+    L[#L + 1] = ns.fmt("Sammeln: |cff00ff00%s|r", ph[3])
     L[#L + 1] = "Wo: " .. ph[4]
     if key == "skin" then
       L[#L + 1] = ns.fmt("Höchstes häutbares Mob-Level: |cff00ff00~%d|r", mobLevel(rank))
     end
-    for _, h in ipairs(def.hints or {}) do
-      if rank >= h[1] and rank <= h[2] then
-        L[#L + 1] = "|cff999999Tipp: " .. h[3] .. "|r"
-      end
-    end
     for _, wl in ipairs(ns.WarnLines(key, rank)) do L[#L + 1] = wl end
+    for _, tl in ipairs(ns.TipSections(key, rank)) do L[#L + 1] = tl end
     for _, ql in ipairs(ns.QuestLines(key, rank)) do L[#L + 1] = ql end
     if key == "skin" then
       local lr = ns.RankOf("leder")
@@ -65,14 +63,7 @@ local function build(key)
     end
   end
   for _, pl in ipairs(ns.GatherPlanLines(key, rank)) do L[#L + 1] = pl end
-  L[#L + 1] = " "
-  L[#L + 1] = "|cffffd100Der ganze Weg:|r"
-  for _, p in ipairs(def.phases) do
-    local here = rank and rank >= p[1] and rank < p[2]
-    local mark = here and "|cff00ff00> " or "  "
-    L[#L + 1] = ns.fmt("%s%d-%d: %s|r", mark, p[1], math.min(p[2], 300), p[3])
-    L[#L + 1] = "      |cff999999" .. p[4] .. "|r"
-  end
+  for _, pl in ipairs(ns.PathSection(key, rank)) do L[#L + 1] = pl end
   ns.SetLines(key, L)
 
   local acts = {}
@@ -84,8 +75,9 @@ local function build(key)
   for _, a in ipairs(ns.TrainerActions(key, rank or 1)) do acts[#acts + 1] = a end
   for _, a in ipairs(ns.QuestActions(key, rank or 1)) do acts[#acts + 1] = a end
   for _, craft in ipairs(ns.gatherPairs[key] or {}) do
-    for _, a in ipairs(ns.ShoppingActions(craft, ns.RankOf(craft), nil)) do acts[#acts + 1] = a end
+    for _, a in ipairs(ns.ShoppingActions(craft, ns.RankOf(craft), nil)) do a.sec = "plan"; acts[#acts + 1] = a end
   end
+  for _, a in ipairs(ns.GunstActions()) do acts[#acts + 1] = a end
   ns.SetActions(key, acts)
 end
 
