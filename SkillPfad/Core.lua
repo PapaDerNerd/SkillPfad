@@ -10,13 +10,12 @@ function ns.phaseFor(key, rank)
 end
 
 function ns.RankOf(key)
-  local r = (SkillPfadDB.ranks or {})[key]
-  if not r and key == "leder" then r = SkillPfadDB.rank end   -- alte Version
-  return r
+  return (ns.C().ranks or {})[key]
 end
 local function setRank(key, r)
-  SkillPfadDB.ranks = SkillPfadDB.ranks or {}
-  SkillPfadDB.ranks[key] = r
+  local c = ns.C()
+  c.ranks = c.ranks or {}
+  c.ranks[key] = r
 end
 
 -- Schluessel des gerade geoeffneten Berufsfensters (oder nil)
@@ -196,8 +195,9 @@ local function colorOf(r) return (r.type == "optimal") and "|cffff8040" or "|cff
 local function buildRaw(key, rank, maxRank, list, usePrice, cached)
   local def = ns.defs[key]
   local ph = ns.phaseFor(key, rank)
-  SkillPfadDB.maxRanks = SkillPfadDB.maxRanks or {}
-  SkillPfadDB.maxRanks[key] = maxRank
+  local cm = ns.C()
+  cm.maxRanks = cm.maxRanks or {}
+  cm.maxRanks[key] = maxRank
   local L = { "##now|Jetzt|" }
   if cached then
     L[#L + 1] = "|cff999999Stand vom letzten Öffnen des Berufsfensters (Skill " .. cached.rank ..
@@ -273,7 +273,7 @@ local lastBuildErr = 0
 local function build(key, ...)
   local ok, err = pcall(buildRaw, key, ...)
   if ok then return end
-  if SkillPfadDB.cache then SkillPfadDB.cache[key] = nil end   -- verdaechtigen Cache verwerfen
+  if ns.C().cache then ns.C().cache[key] = nil end   -- verdaechtigen Cache verwerfen
   if GetTime() - lastBuildErr > 30 then
     lastBuildErr = GetTime()
     ns.print("|cffff4040SkillPfad:|r Anzeige konnte nicht berechnet werden und wurde zurueckgesetzt. Oeffne das Berufsfenster erneut. (" .. tostring(err):sub(1, 160) .. ")")
@@ -296,8 +296,9 @@ local function refreshRaw()
     c[#c + 1] = { name = r.name, type = r.type, money = r.money, miss = r.miss, reag = rg,
                   wscore = r.wscore, mscore = r.mscore }
   end
-  SkillPfadDB.cache = SkillPfadDB.cache or {}
-  SkillPfadDB.cache[key] = { rank = rank, maxRank = maxRank, list = c }
+  local cc0 = ns.C()
+  cc0.cache = cc0.cache or {}
+  cc0.cache[key] = { rank = rank, maxRank = maxRank, list = c }
   build(key, rank, maxRank, list, usePrice, nil)
 end
 
@@ -331,7 +332,7 @@ for key, def in pairs(ns.defs) do
   ns.tabRefresh[key] = function()
     if openKey() == key then queue(); return end
     local r = ns.RankOf(key)
-    local cc = SkillPfadDB.cache and SkillPfadDB.cache[key]
+    local cc = ns.C().cache and ns.C().cache[key]
     if cc and cc.list and #cc.list > 0 then
       local list = {}
       for _, e in ipairs(cc.list) do
@@ -504,3 +505,55 @@ SLASH_SKILLPFADK1 = "/kochen"
 SlashCmdList["SKILLPFADK"] = function(m) handle(m, "kochen") end
 SLASH_SKILLPFADH1 = "/erstehilfe"
 SlashCmdList["SKILLPFADH"] = function(m) handle(m, "ersthilfe") end
+
+-- Erlernte Berufe aus den Faehigkeitslinien uebernehmen: Skill pro Charakter merken,
+-- nicht (mehr) erlernte Berufe vergessen und, solange du nichts selbst gewaehlt hast,
+-- nur die erlernten Berufe als Reiter zeigen.
+function ns.SyncSkills()
+  local n = ns.Skills.Num()
+  if not n or n == 0 then return end
+  ns.Skills.ExpandAll()
+  local byName = {}
+  for key, d in pairs(ns.defs) do for nm in pairs(d.names or {}) do byName[nm] = key end end
+  local learned, any = {}, false
+  for i = 1, ns.Skills.Num() do
+    local name, header, rank, maxRank = ns.Skills.Info(i)
+    if name and not header then
+      any = true
+      local key = byName[name]
+      if key and tonumber(rank) then learned[key] = { rank, maxRank } end
+    end
+  end
+  if not any then return end
+  local c = ns.C()
+  c.ranks = c.ranks or {}; c.maxRanks = c.maxRanks or {}
+  for key in pairs(ns.defs) do
+    local l = learned[key]
+    if l then
+      c.ranks[key] = l[1]
+      if tonumber(l[2]) and l[2] > 0 then c.maxRanks[key] = l[2] end
+    else
+      c.ranks[key] = nil; c.maxRanks[key] = nil
+      if c.cache then c.cache[key] = nil end
+    end
+  end
+  if not c.offManual and next(learned) then
+    c.off = {}
+    for key in pairs(ns.defs) do
+      if not learned[key] then c.off[key] = true end
+    end
+    if ns.LayoutTabs then ns.LayoutTabs() end
+  end
+  if ns.UpdateOptions then pcall(ns.UpdateOptions) end
+end
+
+local sync = CreateFrame("Frame")
+sync:RegisterEvent("PLAYER_LOGIN")
+ns.Reg(sync, "SKILL_LINES_CHANGED")
+sync:SetScript("OnEvent", function(_, e)
+  if e == "PLAYER_LOGIN" then
+    C_Timer.After(2, function() pcall(ns.SyncSkills) end)
+  else
+    pcall(ns.SyncSkills)
+  end
+end)

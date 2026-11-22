@@ -32,10 +32,11 @@ local function build(key)
     L[#L + 1] = "|cffff8040" .. def.label .. " nicht gefunden (nicht erlernt?).|r"
     L[#L + 1] = "Der ganze Weg steht unten (aufklappen)."
   else
-    SkillPfadDB.ranks = SkillPfadDB.ranks or {}
-    SkillPfadDB.ranks[key] = rank
-    SkillPfadDB.maxRanks = SkillPfadDB.maxRanks or {}
-    SkillPfadDB.maxRanks[key] = maxRank
+    local c = ns.C()
+    c.ranks = c.ranks or {}
+    c.ranks[key] = rank
+    c.maxRanks = c.maxRanks or {}
+    c.maxRanks[key] = maxRank
     local ph = ns.phaseFor(key, rank)
     L[#L + 1] = "##now|Jetzt|"
     if rank >= maxRank and maxRank < 300 then

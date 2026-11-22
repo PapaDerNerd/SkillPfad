@@ -49,6 +49,25 @@ function ns.Reg(frame, name)
   return (pcall(frame.RegisterEvent, frame, name))
 end
 
+-- Daten pro Charakter (Skill, Rezept-Cache, angezeigte Berufe); Einstellungen bleiben accountweit
+function ns.CharKey()
+  local n = UnitName and UnitName("player")
+  if not n or n == "" or n == UNKNOWNOBJECT then return nil end
+  return n .. "-" .. ((GetRealmName and GetRealmName()) or "")
+end
+local fallback = {}
+function ns.C()
+  local k = ns.CharKey()
+  if not k or type(SkillPfadDB) ~= "table" then return fallback end
+  if type(SkillPfadDB.chars) ~= "table" then SkillPfadDB.chars = {} end
+  local c = SkillPfadDB.chars[k]
+  if type(c) ~= "table" then c = {}; SkillPfadDB.chars[k] = c end
+  for _, tk in ipairs({ "ranks", "maxRanks", "cache", "off" }) do
+    if c[tk] ~= nil and type(c[tk]) ~= "table" then c[tk] = nil end
+  end
+  return c
+end
+
 -- Faehigkeitslinien: Forever nutzt C_SkillInfo, Klassik-Clients die globalen Funktionen
 ns.Skills = {}
 function ns.Skills.Num()

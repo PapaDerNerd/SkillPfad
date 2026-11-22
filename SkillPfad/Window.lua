@@ -318,7 +318,7 @@ render = function()
   -- Skillbalken und Phase
   local rank = (current ~= "opt" and ns.RankOf) and ns.RankOf(current) or nil
   if rank then
-    local mx = tonumber(SkillPfadDB.maxRanks and SkillPfadDB.maxRanks[current]) or 300
+    local mx = tonumber(ns.C().maxRanks and ns.C().maxRanks[current]) or 300
     if mx < rank or mx <= 0 then mx = 300 end
     bar:SetMinMaxValues(0, mx); bar:SetValue(rank); barText:SetText(rank .. " / " .. mx)
     bar:SetStatusBarColor(rank >= 300 and 0.2 or 0.85, rank >= 300 and 0.8 or 0.65, 0.1)
@@ -448,7 +448,8 @@ render = function()
 end
 
 function ns.Enabled(key)
-  return key == "opt" or not (SkillPfadDB.off and SkillPfadDB.off[key])
+  local off = ns.C().off
+  return key == "opt" or not (off and off[key])
 end
 
 local keys = {}
@@ -682,12 +683,19 @@ for i, key in ipairs(ns.order) do
   local t = ns.WrapObj(_G[c:GetName() .. "Text"])
   t:SetText(ns.defs[key].label); t:SetWidth(200); t:SetJustifyH("LEFT")
   c:SetScript("OnClick", function(self)
-    SkillPfadDB.off = SkillPfadDB.off or {}
-    SkillPfadDB.off[key] = (not self:GetChecked()) or nil
+    local c = ns.C()
+    c.off = c.off or {}
+    c.off[key] = (not self:GetChecked()) or nil
+    c.offManual = true      -- eigene Auswahl: nicht mehr automatisch nach erlernten Berufen
     layoutTabs()
     if not ns.Enabled(current) then showTab(current) end
   end)
   profChecks[key] = c
+end
+-- von aussen (automatische Auswahl nach erlernten Berufen)
+function ns.LayoutTabs()
+  layoutTabs()
+  if f:IsShown() and not ns.Enabled(current) then showTab(current) end
 end
 
 -- Rechte Spalte: Optik und Status
@@ -791,12 +799,14 @@ init:SetScript("OnEvent", function(_, _, name)
     if SkillPfadDB[k] == nil then SkillPfadDB[k] = v end
   end
   -- Datenbank-Version und Grundpruefung (alte/kaputte Daten verwerfen statt Fehler zu werfen)
-  local DBV = 1
-  for _, tk in ipairs({ "off", "cache", "routes", "ranks", "fold", "maxRanks" }) do
+  local DBV = 2
+  for _, tk in ipairs({ "routes", "fold", "chars" }) do
     if type(SkillPfadDB[tk]) ~= "table" then SkillPfadDB[tk] = nil end
   end
   if (tonumber(SkillPfadDB.dbVersion) or 0) < DBV then
     SkillPfadDB.cache = nil          -- Cache-Format kann sich zwischen Versionen aendern
+    -- ab DB 2 liegen Skill, Cache und Berufsauswahl pro Charakter; alte gemeinsame Werte verwerfen
+    SkillPfadDB.ranks, SkillPfadDB.maxRanks, SkillPfadDB.off, SkillPfadDB.rank = nil, nil, nil, nil
     SkillPfadDB.dbVersion = DBV
   end
   if ns.InitLang then ns.InitLang() end
