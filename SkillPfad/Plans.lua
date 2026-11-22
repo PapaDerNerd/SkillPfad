@@ -18,7 +18,7 @@ local RS, CS, HS, SS, DS = 2835, 2836, 2838, 7912, 12365         -- Steine
 local LIN, WOOL, SILK, MW, RC = 2589, 2592, 4306, 4338, 14047    -- Stoffe
 local PEACE, SILVER, MAGE, EARTH, BRIAR, KELP = 2447, 765, 785, 2449, 2450, 3820
 local KINGS, LIFE, GOLDT, KHAD, SUN, BLIND, ARTH = 3356, 3357, 3821, 3358, 8838, 8839, 8836
-local PLAGUE, LOTUS, FIREB, GHOST = 13466, 8831, 4625, 8845
+local PLAGUE, LOTUS, FIREB, GHOST, MURLOC = 13466, 8831, 4625, 8845, 730
 local STAR, EOA, OPAL, ARC = 7910, 7082, 12799, 12360
 local STRD, SOULD, VISD, DREAMD, ILLD, LMAG, LAST = 10940, 11083, 11137, 11176, 16204, 10938, 10998
 local F1, F2, F3, F4, F5, F6 = 6291, 6289, 6317, 8365, 4603, 13893  -- Fische
@@ -35,7 +35,7 @@ ns.itemName = {
   [PEACE] = "Friedensblume", [SILVER] = "Silberblatt", [MAGE] = "Maguskönigskraut", [EARTH] = "Erdwurzel",
   [BRIAR] = "Wilddornrose", [KELP] = "Würgetang", [KINGS] = "Königsblut", [LIFE] = "Lebenswurz", [GOLDT] = "Golddorn",
   [KHAD] = "Khadgars Schnurrbart", [SUN] = "Sonnengras", [BLIND] = "Blindkraut", [ARTH] = "Arthas' Tränen",
-  [PLAGUE] = "Pestblüte", [LOTUS] = "Lila Lotus", [FIREB] = "Feuerblüte", [GHOST] = "Geisterpilz",
+  [PLAGUE] = "Pestblüte", [LOTUS] = "Lila Lotus", [FIREB] = "Feuerblüte", [GHOST] = "Geisterpilz", [MURLOC] = "Murlocauge",
   [STAR] = "Sternrubin", [EOA] = "Wesen der Luft", [OPAL] = "Großer Opal", [ARC] = "Arkanitbarren",
   [STRD] = "Seltsamer Staub", [SOULD] = "Seelenstaub", [VISD] = "Visionenstaub", [DREAMD] = "Traumstaub",
   [ILLD] = "Illusionsstaub", [LMAG] = "Geringe Magieessenz", [LAST] = "Geringe Astralessenz",
@@ -181,22 +181,22 @@ ns.plans.ingenieur = {
 
 ns.plans.alchemie = {
   { id = "wowhead", name = "Wowhead (3.11.2026)", note = "Ab Skill 225 ungetestet.", steps = {
-    S(1, 12, "Elixier der geringen Kraft", SILVER, 11), S(12, 55, "Elixier der geringen Verteidigung", SILVER, 43, PEACE, 43),
-    S(55, 65, "Schwacher Manatrank", MAGE, 10, PEACE, 10), S(65, 90, "Elixier der geringen Seelenstärke", EARTH, 52, PEACE, 26),
+    S(1, 12, "Elixier der schwachen Gewalt", SILVER, 11), S(12, 55, "Elixier der schwachen Verteidigung", SILVER, 43, PEACE, 43),
+    S(55, 65, "Schwacher Manatrank", MAGE, 10, PEACE, 10), S(65, 90, "Elixier der schwachen Seelenstärke", EARTH, 52, PEACE, 26),
     S(90, 120, "Elixier der Weisheit", MAGE, 30, BRIAR, 60), S(120, 160, "Geringer Manatrank", MAGE, 43, KELP, 43),
     S(160, 195, "Manatrank", KELP, 38, KINGS, 38), S(195, 205, "Elixier der Beweglichkeit", KELP, 10, GOLDT, 10),
     S(205, 225, "Großer Manatrank", KHAD, 20, GOLDT, 20), S(225, 226, "Stein der Weisen", IR, 4, LOTUS, 4, FIREB, 4),
-    S(226, 240, "Großer Manatrank", KHAD, 20, GOLDT, 20), S(240, 260, "Trank Untote entdecken", ARTH, 23),
-    S(260, 270, "Überragender Manatrank", SUN, 20, BLIND, 20), S(270, 300, "Mächtiger Verfärbter Heiltrank", PLAGUE, 31),
+    S(226, 240, "Großer Manatrank", KHAD, 20, GOLDT, 20), S(240, 260, "Trunk der Untotenentdeckung", ARTH, 23),
+    S(260, 270, "Überragender Manatrank", SUN, 20, BLIND, 20), S(270, 300, "Erheblicher verfärbter Heiltrank", PLAGUE, 31, MURLOC, 31),
   } },
   { id = "profs", name = "wow-professions (Forever-Beta)", note = "Ab Skill 225 ungetestet; letzte 10 Punkte nicht final.", steps = {
-    S(1, 10, "Kleines Arkanelixier", PEACE, 9), S(10, 55, "Elixier der geringen Verteidigung", SILVER, 45, PEACE, 45),
-    S(55, 65, "Schwacher Manatrank", MAGE, 10, PEACE, 10), S(65, 90, "Elixier der geringen Seelenstärke", EARTH, 54, PEACE, 27),
+    S(1, 10, "Geringes Arkanelixier", PEACE, 9), S(10, 55, "Elixier der schwachen Verteidigung", SILVER, 45, PEACE, 45),
+    S(55, 65, "Schwacher Manatrank", MAGE, 10, PEACE, 10), S(65, 90, "Elixier der schwachen Seelenstärke", EARTH, 54, PEACE, 27),
     S(90, 120, "Elixier der Weisheit", MAGE, 30, BRIAR, 60), S(120, 130, "Geringer Manatrank", MAGE, 10, KELP, 10),
     S(130, 150, "Geringer Manatrank", MAGE, 20, KELP, 20), S(150, 165, "Geringer Manatrank", MAGE, 22, KELP, 22),
     S(165, 195, "Manatrank", KELP, 36, KINGS, 36), S(195, 225, "Naturschutztrank", LIFE, 36, KELP, 36),
     S(225, 230, "Naturschutztrank", LIFE, 12, KELP, 12), S(230, 240, "Großer Manatrank", KHAD, 20, GOLDT, 20),
-    S(240, 265, "Trank Untote entdecken", ARTH, 35), S(265, 275, "Überragender Manatrank", SUN, 20, BLIND, 20),
+    S(240, 265, "Trunk der Untotenentdeckung", ARTH, 35), S(265, 275, "Überragender Manatrank", SUN, 20, BLIND, 20),
     S(275, 290, "Überragender Manatrank", SUN, 40, BLIND, 40), S(290, 300, "Großer Frenzy-Trank", PLAGUE, 51, BLIND, 34),
   } },
 }
