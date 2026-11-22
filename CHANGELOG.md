@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.5
+- Mehrere Charaktere: Skill, Rezept-Stand und die angezeigten Berufe werden jetzt pro Charakter gespeichert (vorher accountweit gemischt). Beim Einloggen zeigt SkillPfad automatisch nur die Berufe, die der Charakter erlernt hat; wer in den Optionen selbst wählt, behält seine Auswahl. Einstellungen wie Optik, Fenster, Routen und Preise bleiben accountweit.
+- Multiple characters: skill, recipe state and the shown professions are now saved per character (previously mixed account-wide). On login SkillPfad automatically shows only the professions the character has learned; if you choose in the options yourself, your choice is kept. Settings such as look, window, routes and prices stay account-wide.
+
 ## 1.12.4
 - Alchemie: Rezeptnamen der Routen an die deutschen Spielnamen angepasst (laut Wowhead Forever und QuestieDB): Elixier der schwachen Gewalt, Elixier der schwachen Verteidigung, Elixier der schwachen Seelenstärke, Trunk der Untotenentdeckung, Erheblicher verfärbter Heiltrank, Geringes Arkanelixier. Bei 270-300 zählt jetzt auch das Murlocauge (31) zum Gesamtbedarf.
 - CurseForge-Projekt-ID in der .toc (SkillPfad ist jetzt auf CurseForge).
