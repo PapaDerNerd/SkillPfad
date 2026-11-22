@@ -28,6 +28,10 @@
 
 ## Installation
 
+**Am einfachsten:** über die CurseForge-App installieren und aktuell halten – [SkillPfad auf CurseForge](https://www.curseforge.com/wow/addons/skillpfad).
+
+Oder von Hand:
+
 1. ZIP von der [Releases-Seite](../../releases) laden (oder dieses Repo klonen).
 2. Den Ordner `SkillPfad` nach `…/_forever_/Interface/AddOns/` kopieren, sodass `…/AddOns/SkillPfad/SkillPfad.toc` existiert.
 3. Spiel starten (oder `/reload`). Optional: **TomTom** und **Auctionator** installieren.
@@ -52,7 +56,7 @@ Ausführliche Hilfe: [docs/ANLEITUNG.md](docs/ANLEITUNG.md).
 
 Das Addon ist neu. Daten und Oberfläche sind im Testaufbau geprüft, aber **noch nicht vollständig im Spiel**. Manche Phasen ab Skill 225 beruhen auf nicht überprüften Quellen, einzelne Item-IDs und Karten-IDs können falsch sein. Fehler bitte als [Issue](../../issues) melden, am besten mit der Ausgabe von `/sp check`.
 
-Bekannte Lücken: Verkäufer des Machtfisch-Steak-Rezepts (Allianz), Thorium-Widget-Schema (Allianz), Mengen der Schneiderei 205–234, Alchemie „Murlocauge“.
+Bekannte Lücken: Verkäufer des Machtfisch-Steak-Rezepts (Allianz), Thorium-Widget-Schema (Allianz), Mengen der Schneiderei 205–234.
 
 ## Quellen & Lizenz
 

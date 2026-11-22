@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.12.4
+- Alchemie: Rezeptnamen der Routen an die deutschen Spielnamen angepasst (laut Wowhead Forever und QuestieDB): Elixier der schwachen Gewalt, Elixier der schwachen Verteidigung, Elixier der schwachen Seelenstärke, Trunk der Untotenentdeckung, Erheblicher verfärbter Heiltrank, Geringes Arkanelixier. Bei 270-300 zählt jetzt auch das Murlocauge (31) zum Gesamtbedarf.
+- CurseForge-Projekt-ID in der .toc (SkillPfad ist jetzt auf CurseForge).
+- Geprüft: QuestieDB 1.1.4 (keine Änderung an Berufsquests), Auctionator 351, keine neuen Berufs-Hotfixes.
+- Alchemy: recipe names of the routes now match the in-game names (per Wowhead Forever and QuestieDB): Elixir of Minor Force, Elixir of Minor Defense, Elixir of Minor Fortitude, Elixir of Detect Undead, Major Discolored Healing Potion, Lesser Arcane Elixir. At 270-300 the Murloc Eye (31) now counts towards total needs.
+- CurseForge project ID in the .toc (SkillPfad is now on CurseForge).
+- Checked: QuestieDB 1.1.4 (no change to profession quests), Auctionator 351, no new profession hotfixes.
+
 ## 1.12.3
 - Fenster größer (860 x 660) und mit dem Griff unten rechts frei in der Größe veränderbar (760 x 600 bis 1600 x 1200); Größe wird gespeichert, die Karten passen sich der Breite an. "Fenster sperren" sperrt auch die Größe.
 - Optionen neu geordnet: links "Anzeige und Verhalten", "Fenster und Inhalt", "Route, Sprache und Preise", rechts "Berufe anzeigen" und "Optik" mit Status. Optik-Seite mit Vorschau rechts daneben.

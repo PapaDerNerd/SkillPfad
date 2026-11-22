@@ -26,6 +26,10 @@
 
 ## Installation
 
+**Easiest:** install and keep it updated with the CurseForge app – [SkillPfad on CurseForge](https://www.curseforge.com/wow/addons/skillpfad).
+
+Or manually:
+
 1. Download the ZIP from [Releases](../../releases).
 2. Copy the `SkillPfad` folder to `…/_forever_/Interface/AddOns/`.
 3. Start the game or `/reload`. Optional: TomTom, Auctionator.
