@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.6
+- Händlergunst: neuer Tipp bei allen sieben Herstellungsberufen mit Lagerhändler, woher der Ruf für die höheren Rezepte kommt (Handwerksverfügungen: 75/125/200 Ruf, jede einmal täglich, keine Gunst).
+- Geprüft: QuestieDB 1.1.5 (Berufsquests unverändert; Handwerksverfügungen jetzt als täglich markiert), Auctionator 352, WoW-Client unverändert.
+- Merchant's Favor: new tip for all seven crafting professions with a camp vendor on where the reputation for the higher recipes comes from (Craftsman's Writs: 75/125/200 reputation, each once a day, no Favor).
+- Checked: QuestieDB 1.1.5 (profession quests unchanged; Craftsman's Writs now marked daily), Auctionator 352, WoW client unchanged.
+
 ## 1.12.5
 - Mehrere Charaktere: Skill, Rezept-Stand und die angezeigten Berufe werden jetzt pro Charakter gespeichert (vorher accountweit gemischt). Beim Einloggen zeigt SkillPfad automatisch nur die Berufe, die der Charakter erlernt hat; wer in den Optionen selbst wählt, behält seine Auswahl. Einstellungen wie Optik, Fenster, Routen und Preise bleiben accountweit.
 - Multiple characters: skill, recipe state and the shown professions are now saved per character (previously mixed account-wide). On login SkillPfad automatically shows only the professions the character has learned; if you choose in the options yourself, your choice is kept. Settings such as look, window, routes and prices stay account-wide.
